@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DigitpulseAi</title>
+<style>
+:root{--bg:#0b1020;--card:#141b34;--bd:#263056;--tx:#e8ecff;--mu:#9aa6d6;--ac:#22d3a6;--ac2:#6366f1;--wr:#fbbf24;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f6ff;--card:#fff;--bd:#d9def5;--tx:#141b34;--mu:#5b6591;--ac:#0d9f7e;--ac2:#4f46e5;--wr:#b45309}}
+:root[data-theme="light"]{--bg:#f4f6ff;--card:#fff;--bd:#d9def5;--tx:#141b34;--mu:#5b6591;--ac:#0d9f7e;--ac2:#4f46e5;--wr:#b45309}
+:root[data-theme="dark"]{--bg:#0b1020;--card:#141b34;--bd:#263056;--tx:#e8ecff;--mu:#9aa6d6;--ac:#22d3a6;--ac2:#6366f1;--wr:#fbbf24}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.w{max-width:960px;margin:0 auto;padding:20px 16px 48px}
+nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.logo{font-weight:800;font-size:1.25rem}.logo b{color:var(--ac)}
+.pill{font-size:.8rem;color:var(--mu);border:1px solid var(--bd);border-radius:99px;padding:4px 10px}
+h1{font-size:clamp(1.9rem,6vw,3rem);line-height:1.15;margin:.2em 0}
+h2{margin:.2em 0 .6em}
+p{color:var(--mu)}
+.btn{background:linear-gradient(135deg,var(--ac2),var(--ac));color:#fff;border:0;border-radius:10px;padding:12px 20px;font-size:1rem;font-weight:700;cursor:pointer}
+.btn.g{background:transparent;border:1px solid var(--bd);color:var(--tx)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.plan{cursor:pointer;position:relative;transition:.15s}
+.plan:hover,.plan.sel{border-color:var(--ac);transform:translateY(-2px)}
+.price{font-size:2rem;font-weight:800}.price small{font-size:.9rem;color:var(--mu);font-weight:400}
+.tag{position:absolute;top:-10px;right:14px;background:var(--ac);color:#04221b;font-size:.7rem;font-weight:800;padding:2px 10px;border-radius:99px}
+ul{padding-left:18px;color:var(--mu)}
+.row{display:flex;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px;margin:6px 0 14px}
+.row code{flex:1;word-break:break-all;font-size:.9rem}
+.row button{border:0;background:var(--ac2);color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer}
+.tabs{display:flex;gap:8px;margin:14px 0}
+.tabs .btn{flex:1}
+.hid{display:none}
+.steps{display:flex;gap:6px;margin-bottom:18px;font-size:.75rem;color:var(--mu);flex-wrap:wrap}
+.steps span{padding:3px 10px;border-radius:99px;border:1px solid var(--bd)}.steps .on{background:var(--ac);color:#04221b;border-color:var(--ac);font-weight:700}
+.wait{text-align:center}.wait .ic{font-size:3rem}
+.note{font-size:.8rem;color:var(--wr)}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+body{background:radial-gradient(900px 420px at 85% -80px,color-mix(in srgb,var(--ac2) 28%,transparent),transparent),radial-gradient(700px 380px at -10% 10%,color-mix(in srgb,var(--ac) 18%,transparent),transparent),var(--bg)}
+main>*{animation:up .45s ease both}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ac) 50%,transparent)}70%{box-shadow:0 0 0 10px transparent}}
+.hero{position:relative;overflow:hidden;background:linear-gradient(160deg,var(--card),color-mix(in srgb,var(--card) 80%,var(--ac2)))}
+.digits{display:flex;gap:6px;margin-top:18px;flex-wrap:wrap}
+.digits span{width:34px;height:42px;display:grid;place-items:center;border:1px solid var(--bd);border-radius:8px;font-weight:800;color:var(--ac);background:var(--bg);animation:fl 3s ease-in-out infinite}
+.digits span:nth-child(2n){animation-delay:.4s}.digits span:nth-child(3n){animation-delay:.9s}
+.btn{transition:transform .15s,box-shadow .15s}.btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 18px color-mix(in srgb,var(--ac2) 40%,transparent)}
+.hero .btn:first-child{animation:pulse 2.2s infinite}
+.card{transition:border-color .2s,transform .2s}
+.rv{transition:opacity .3s}.rv.out{opacity:0}
+.st{color:var(--wr);letter-spacing:2px}
+.rv .card b{display:block}
+input,textarea,select{width:100%;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:10px;font:inherit;margin:4px 0 10px}
+.ft{text-align:center;font-size:.75rem;color:var(--mu);margin-top:28px}
+
+.bars{display:flex;gap:6px}.bar{flex:1;display:flex;flex-direction:column;align-items:center}
+.bt{height:90px;width:100%;display:flex;align-items:flex-end}.bt i{display:block;width:100%;background:linear-gradient(var(--ac2),var(--ac));border-radius:4px 4px 0 0;transition:height .4s}
+.bar span{font-size:.7rem;color:var(--mu);margin-top:4px}
+.lock{position:relative;margin-top:14px;border:1px dashed var(--bd);border-radius:10px;padding:14px;text-align:center}
+.lock .bl{filter:blur(6px);font-weight:700;user-select:none}.lock .btn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap}
+details{border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin:8px 0;background:var(--card)}summary{cursor:pointer;font-weight:700}details p{margin:8px 0 0}
+.wa{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));background:#25d366;color:#04230f;font-weight:800;font-size:.75rem;border-radius:99px;padding:7px 12px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.3);z-index:9}
+
+#dsig{position:relative;width:min(88vw,380px);margin:6px auto 0}.ring{width:100%;display:block;transition:filter .3s}
+.mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;transition:opacity .3s}
+.dl{font-size:.7rem;color:#9fb0ff;letter-spacing:2px;font-weight:700}.dv{font-weight:900;line-height:1.02;text-shadow:0 0 24px var(--c),0 4px 0 rgba(0,0,0,.55)}.dp{font-size:1.9rem;font-weight:900;letter-spacing:1px;text-shadow:0 0 14px var(--c)}
+.vb{display:inline-block;padding:7px 18px;border-radius:99px;font-weight:900;margin-top:14px;font-size:.85rem;letter-spacing:1px}
+.ring.v{animation:glow 1.8s ease-in-out infinite}@keyframes glow{50%{filter:drop-shadow(0 0 26px var(--c))}}
+.sweep{transform-origin:100px 100px;animation:spin 1.1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.scan{width:100%;max-width:340px;margin-top:14px;padding:16px;font-size:1.1rem;letter-spacing:2px;text-transform:uppercase;border-radius:14px;box-shadow:0 8px 22px color-mix(in srgb,var(--ac2) 45%,transparent)}
+#dopt{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px;align-items:center}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="w">
+<nav><div class="logo">Digitpulse<b>Ai</b></div><button class="pill" id="lg" onclick="toggleLang()" style="cursor:pointer;background:none;color:var(--tx)">SW</button></nav>
+<div class="steps" id="steps"></div>
+<main id="app"></main>
+</div>
+<a class="wa" href="https://wa.me/254741092009" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">&#128172; Chat with us</a>
+<script>
+/* Deriv app id; in Deriv's dashboard set the redirect URL for this app to https://digitpulseai.site/ */
+var APP_ID="34yJS0kUHIBFwADximqJH",SITE="https://digitpulseai.site/",WA="254741092009",USDT="TFqjtFXBmu6aeFMar3VZzijJqRcNYzXndB",MPESA="0741080064",PAYEE="Hezekiel Machuka";
+var PLANS=[
+{id:"matches",name:"Matches / Differs",price:150,tag:"Best value",f:["All market analysis","Matches / Differs signals","Rise/Fall, Even/Odd, Over/Under","Full year access"]},
+{id:"rfeo",name:"Rise/Fall + Even/Odd",price:100,f:["All other markets","Rise/Fall analysis","Even/Odd analysis","No Matches / Differs"]},
+{id:"ou",name:"Over / Under",price:80,f:["Over/Under analysis","Digit stats and trends","Full year access"]}];
+var S={view:"home",account:null,plan:null,method:"usdt",status:null};
+function load(){try{var d=JSON.parse(localStorage.getItem("dpai")||"{}");for(var k in d)S[k]=d[k]}catch(e){}}
+function save(){try{localStorage.setItem("dpai",JSON.stringify({account:S.account,plan:S.plan,status:S.status,lang:S.lang}))}catch(e){}}
+function plan(){return PLANS.filter(function(p){return p.id===S.plan})[0]}
+function go(v){S.view=v;render();window.scrollTo(0,0)}
+function copy(t,b){var ok=function(){var o=b.textContent;b.textContent="Copied!";setTimeout(function(){b.textContent=o},1400)};
+try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}
+function fb(){var a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){}a.remove()}}
+var SCOPE="trade"; /* Deriv OAuth scope; change here if your app uses a different one */
+function b64u(buf){return btoa(String.fromCharCode.apply(null,new Uint8Array(buf))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function parseOAuth(){var q=new URLSearchParams(location.search),c=q.get("code"),e=q.get("error");if(!c&&!e)return;var ok=false;
+try{ok=!!q.get("state")&&q.get("state")===sessionStorage.getItem("oauth_state");sessionStorage.removeItem("oauth_state");sessionStorage.removeItem("pkce_v")}catch(x){}
+try{history.replaceState(null,"",location.pathname)}catch(x){}
+if(c&&ok){S.account="deriv";S.err=null;S.view="plans";save()}else{S.err=e?"Deriv login was cancelled or failed. Please try again.":"We could not verify the Deriv login. Please start again from this site.";S.view="login"}}
+function derivLogin(){var cs="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~",v=Array.prototype.map.call(crypto.getRandomValues(new Uint8Array(64)),function(x){return cs[x%66]}).join(""),st=Array.prototype.map.call(crypto.getRandomValues(new Uint8Array(16)),function(x){return("0"+x.toString(16)).slice(-2)}).join("");
+try{sessionStorage.setItem("pkce_v",v);sessionStorage.setItem("oauth_state",st)}catch(e){S.err="Your browser is blocking storage. Enable it and try again.";return render()}
+crypto.subtle.digest("SHA-256",new TextEncoder().encode(v)).then(function(h){location.href="https://auth.deriv.com/oauth2/auth?response_type=code&client_id="+encodeURIComponent(APP_ID)+"&redirect_uri="+encodeURIComponent(SITE)+"&scope="+encodeURIComponent(SCOPE)+"&state="+st+"&code_challenge="+b64u(h)+"&code_challenge_method=S256"})}
+function demo(){S.err=null;S.account="Demo-User";save();go("plans")}
+function pick(id){S.plan=id;save();if(S.status==="pending")go("wait");else if(!S.account)go("login");else go("pay")}
+function waLink(){var p=plan();return "https://wa.me/"+WA+"?text="+encodeURIComponent("Hello, I have paid for DigitpulseAi ("+p.name+" - $"+p.price+"/yr) via "+(S.method==="usdt"?"USDT TRC20":"M-Pesa")+". Account: "+S.account+". Screenshot attached.")}
+function paid(){S.status="pending";save();window.open(waLink(),"_blank");go("wait")}
+function reset(){S.plan=null;S.status=null;S.method="usdt";save();go("plans")}
+function logout(){S={view:"home",account:null,plan:null,status:null,method:"usdt"};save();render()}
+function setM(m){S.method=m;render()}
+function accessTool(){if(!S.account)go("login");else if(S.status==="pending")go("wait");else if(S.status==="approved")go("dash");else go("plans")}
+function row(v,id){return '<div class="row"><code>'+v+'</code><button onclick="copy(\''+v+'\',this)">Copy</button></div>'}
+var V={
+home:function(){return '<div class="card hero" style="padding:36px 22px"><span class="pill">Deriv digit analysis</span><h1>Read the digits.<br>Trade with <span style="color:var(--ac)">clarity</span>.</h1><p>DigitpulseAi analyses Deriv markets and surfaces Matches/Differs, Rise/Fall, Even/Odd and Over/Under signals in real time.</p><div class="acts"><button class="btn" onclick="accessTool()">Access Tool</button><button class="btn g" onclick="go(\'plans\')">View Pricing</button>'+(PREVIEW?'<button class="btn g" onclick="go(\'dash\')">Open Dashboard (preview)</button>':'')+(S.account?'<button class="btn g" onclick="logout()">Disconnect</button>':'')+'</div><div class="digits">'+[3,7,0,9,4,1,8,2,6,5].map(function(d){return '<span>'+d+'</span>'}).join('')+'</div></div><div class="grid" style="margin-top:14px"><div class="card"><b>Live digit stats</b><p>Frequency and streaks per market.</p></div><div class="card"><b>All markets</b><p>Pick a plan, unlock the markets you need.</p></div><div class="card"><b>Secure Deriv login</b><p>Connect with official Deriv OAuth.</p></div></div><h2 style="margin-top:34px">How it works</h2><div class="grid"><div class="card"><b>1. Connect</b><p>Log in with your Deriv account.</p></div><div class="card"><b>2. Choose and pay</b><p>Pick a plan and pay with USDT or M-Pesa.</p></div><div class="card"><b>3. Get approved</b><p>Send your screenshot on WhatsApp and we approve your access.</p></div></div><h2 style="margin-top:34px">What clients say</h2><div class="grid rv" id="rv">'+revHTML()+'</div><div class="card" style="margin-top:20px;max-width:560px"><h2>Leave a review</h2><p>Reviews are private and sent straight to our team.</p><input id="rn" placeholder="Your name"><select id="rr"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select><textarea id="rm" rows="4" placeholder="Write your review"></textarea><div class="acts"><button class="btn" onclick="sendRev(\'wa\')">Send via WhatsApp</button><button class="btn g" onclick="sendRev(\'mail\')">Send via Email</button></div><p class="note" id="rt"></p></div><h2 style="margin-top:34px">Frequently asked questions</h2><details><summary>How long does approval take?</summary><p>After you send your payment screenshot on WhatsApp, we review and approve it as soon as possible.</p></details><details><summary>Which payment methods do you accept?</summary><p>USDT (TRC20) and M-Pesa.</p></details><details><summary>Do I need to pay again if I return?</summary><p>No. Your waiting-for-approval status is kept on this device, so just come back to the site.</p></details><details><summary>Does DigitpulseAi guarantee profit?</summary><p>No. It provides analysis only. Trading involves risk, so only trade what you can afford to lose.</p></details><div class="ft">Trading involves risk. DigitpulseAi provides analysis only and does not guarantee profit.</div>'},
+login:function(){return '<div class="card" style="max-width:440px;margin:0 auto"><div style="margin-bottom:14px"><button class="btn g" onclick="go(\'home\')">&larr; Back</button></div><h2>Connect your Deriv account</h2><p>Log in with Deriv to link your account, then continue to billing.</p><button class="btn" style="width:100%" onclick="derivLogin()">Connect with Deriv</button><div class="acts"><button class="btn g" onclick="demo()">Continue in preview mode</button></div>'+(S.err?'<p class="note" style="color:#ef4444">'+S.err+'</p>':'')+'<p class="note">Preview mode skips Deriv login so you can test the billing flow.</p></div>'},
+plans:function(){return '<div style="margin-bottom:14px"><button class="btn g" onclick="go(\'home\')">&larr; Back</button></div>'+welcome()+'<h2>Choose your plan</h2><p>Billed yearly. Select an offer to continue.</p><div class="grid">'+PLANS.map(function(p){return '<div class="card plan" style="display:flex;flex-direction:column">'+(p.tag?'<span class="tag">'+p.tag+'</span>':'')+'<b>'+p.name+'</b><div class="price">$'+p.price+'<small>/yr</small></div><ul style="flex:1">'+p.f.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul><button class="btn" style="width:100%" onclick="pick(\''+p.id+'\')">Choose plan</button></div>'}).join('')+'</div>'},
+pay:function(){var p=plan(),u=S.method==="usdt";return '<div class="card" style="max-width:520px;margin:0 auto"><div style="margin-bottom:14px"><button class="btn g" onclick="go(\'plans\')">&larr; Back</button></div><h2>Payment</h2><p>'+p.name+' &middot; <b style="color:var(--tx)">$'+p.price+'/yr</b></p><div class="tabs"><button class="btn'+(u?'':' g')+'" onclick="setM(\'usdt\')">USDT TRC20</button><button class="btn'+(u?' g':'')+'" onclick="setM(\'mpesa\')">M-Pesa</button></div>'+(u?'<p>Send exactly <b style="color:var(--tx)">'+p.price+' USDT</b> on the <b style="color:var(--tx)">TRC20</b> network to:</p>'+row(USDT)+'<p class="note">Only use the TRC20 network. Other networks will be lost.</p>':'<p>Send <b style="color:var(--tx)">KES equivalent of $'+p.price+'</b> to:</p>'+row(MPESA)+'<p>Name: <b style="color:var(--tx)">'+PAYEE+'</b></p>')+'<p>After paying, tap below and send your payment screenshot on WhatsApp.</p><div class="acts"><button class="btn" onclick="paid()">I have made the payment</button></div></div>'},
+wait:function(){var p=plan();return '<div class="card wait" style="max-width:480px;margin:0 auto"><div class="ic">&#9203;</div><h2>Waiting for approval</h2><p>We received your payment request for <b style="color:var(--tx)">'+(p?p.name:'')+'</b>. Once you send your screenshot on WhatsApp, it will be approved shortly. You do not need to pay again &mdash; just return to this page.</p><div class="acts" style="justify-content:center"><a href="'+waLink()+'" target="_blank" rel="noopener"><button class="btn">Open WhatsApp</button></a><button class="btn g" onclick="reset()">Reset (preview)</button>'+(PREVIEW?'<button class="btn g" onclick="go(\'dash\')">Preview dashboard</button>':'')+'</div></div>'}
+};
+
+var MAIL="hmpro254@hotmail.com";
+/* SAMPLE reviews - replace with real client reviews */
+var REV=[["Brian K.","Kenya",5,"Clean layout and the digit stats are easy to read. Setup took minutes."],["Amina S.","Tanzania",5,"Payment steps were clear and approval was quick."],["Peter O.","Kenya",4,"Good analysis tool. The Over/Under plan fits my style."],["Linda M.","Uganda",5,"Support on WhatsApp replied fast. Very smooth process."],["Joseph N.","Kenya",4,"Love that I did not have to pay twice when I came back."],["Faith W.","Kenya",5,"Simple, fast and does what it says. Recommended."],["Daniel T.","Rwanda",4,"The market coverage on the top plan is worth it."]];
+function pickRev(){return REV.slice().sort(function(){return Math.random()-.5}).slice(0,3)}
+function revHTML(){return pickRev().map(function(r){return '<div class="card"><div class="st">'+"\u2605".repeat(r[2])+"\u2606".repeat(5-r[2])+'</div><p style="color:var(--tx)">'+r[3]+'</p><b>'+r[0]+'</b><small style="color:var(--mu)">'+r[1]+'</small></div>'}).join('')}
+var rt=null;
+function initHome(){clearInterval(rt);if(S.view!=="home")return;rt=setInterval(function(){var e=document.getElementById("rv");if(!e)return clearInterval(rt);e.classList.add("out");setTimeout(function(){e.innerHTML=revHTML();e.classList.remove("out")},300)},7000)}
+function sendRev(k){var n=document.getElementById("rn").value.trim()||"Anonymous",m=document.getElementById("rm").value.trim(),r=document.getElementById("rr").value,t=document.getElementById("rt");
+if(!m){t.textContent="Please write your review first.";return}
+var txt="DigitpulseAi review\nName: "+n+"\nRating: "+r+"/5\n\n"+m;
+t.textContent="Thank you! Your review was sent to our team.";
+if(k==="wa")window.open("https://wa.me/"+WA+"?text="+encodeURIComponent(txt),"_blank");else location.href="mailto:"+MAIL+"?subject="+encodeURIComponent("DigitpulseAi review from "+n)+"&body="+encodeURIComponent(txt)}
+
+var D={"\u2190 Back":"\u2190 Rudi","Access Tool":"Fungua Zana","View Pricing":"Angalia Bei","Disconnect":"Tenganisha","Deriv digit analysis":"Uchambuzi wa tarakimu za Deriv","Live digit stats":"Takwimu za tarakimu","Frequency and streaks per market.":"Mara na mfululizo kwa kila soko.","All markets":"Masoko yote","Pick a plan, unlock the markets you need.":"Chagua mpango, fungua masoko unayohitaji.","Secure Deriv login":"Kuingia salama kwa Deriv","Connect with official Deriv OAuth.":"Unganisha kupitia Deriv OAuth rasmi.","How it works":"Jinsi inavyofanya kazi","1. Connect":"1. Unganisha","2. Choose and pay":"2. Chagua na ulipe","3. Get approved":"3. Pata idhini","Log in with your Deriv account.":"Ingia kwa akaunti yako ya Deriv.","Pick a plan and pay with USDT or M-Pesa.":"Chagua mpango na ulipe kwa USDT au M-Pesa.","Send your screenshot on WhatsApp and we approve your access.":"Tuma picha ya malipo kwa WhatsApp, nasi tutaidhinisha ufikiaji wako.","Free preview":"Onyesho la bure","Sample data for illustration only. Last-digit frequency, Volatility 10.":"Data ya mfano tu. Mara ya tarakimu ya mwisho, Volatility 10.","Unlock full analysis":"Fungua uchambuzi kamili","What clients say":"Wateja wetu wanasema","Leave a review":"Acha maoni","Reviews are private and sent straight to our team.":"Maoni ni ya siri na hutumwa moja kwa moja kwa timu yetu.","Send via WhatsApp":"Tuma kwa WhatsApp","Send via Email":"Tuma kwa Barua pepe","Frequently asked questions":"Maswali yanayoulizwa mara kwa mara","How long does approval take?":"Idhini huchukua muda gani?","After you send your payment screenshot on WhatsApp, we review and approve it as soon as possible.":"Baada ya kutuma picha ya malipo kwa WhatsApp, tunaikagua na kuidhinisha haraka iwezekanavyo.","Which payment methods do you accept?":"Mnakubali njia gani za malipo?","USDT (TRC20) and M-Pesa.":"USDT (TRC20) na M-Pesa.","Do I need to pay again if I return?":"Je, nilipe tena nikirudi?","No. Your waiting-for-approval status is kept on this device, so just come back to the site.":"Hapana. Hali ya kusubiri idhini inahifadhiwa kwenye kifaa hiki, rudi tu kwenye tovuti.","Does DigitpulseAi guarantee profit?":"Je, DigitpulseAi inahakikisha faida?","No. It provides analysis only. Trading involves risk, so only trade what you can afford to lose.":"Hapana. Inatoa uchambuzi tu. Biashara ina hatari, fanya biashara kwa kiasi unachoweza kupoteza.","Trading involves risk. DigitpulseAi provides analysis only and does not guarantee profit.":"Biashara ina hatari. DigitpulseAi inatoa uchambuzi tu na haihakikishi faida.","Connect your Deriv account":"Unganisha akaunti yako ya Deriv","Log in with Deriv to link your account, then continue to billing.":"Ingia kwa Deriv kuunganisha akaunti yako, kisha endelea kwenye malipo.","Connect with Deriv":"Unganisha na Deriv","Continue in preview mode":"Endelea kwa hali ya majaribio","Back":"Rudi","Choose your plan":"Chagua mpango wako","Billed yearly. Select an offer to continue.":"Malipo ni kwa mwaka. Chagua ofa kuendelea.","Choose plan":"Chagua mpango","Payment":"Malipo","Copy":"Nakili","I have made the payment":"Nimefanya malipo","Waiting for approval":"Inasubiri idhini","Open WhatsApp":"Fungua WhatsApp","Welcome":"Karibu","Connect":"Unganisha","Plan":"Mpango","Pay":"Lipa","Approval":"Idhini","Chat with us":"Ongea nasi","Your name":"Jina lako","Write your review":"Andika maoni yako"};
+function applyLang(){var b=document.getElementById("lg");if(b)b.textContent=S.lang==="sw"?"EN":"SW";if(S.lang!=="sw")return;
+var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n;while(n=w.nextNode()){if(n.parentNode.tagName==="SCRIPT"||n.parentNode.tagName==="STYLE")continue;var k=n.nodeValue.trim();if(D[k])n.nodeValue=n.nodeValue.replace(k,D[k])}
+document.querySelectorAll("input,textarea").forEach(function(e){if(D[e.placeholder])e.placeholder=D[e.placeholder]})}
+function toggleLang(){S.lang=S.lang==="sw"?"en":"sw";save();render()}
+
+var PREVIEW=true; /* set to false before going live: hides the preview dashboard button */
+var MK=[["R_10","Volatility 10 Index",3,2],["R_25","Volatility 25 Index",3,2],["R_50","Volatility 50 Index",4,2],["R_75","Volatility 75 Index",4,2],["R_100","Volatility 100 Index",2,2],["1HZ10V","Volatility 10 (1s) Index",2,1],["1HZ15V","Volatility 15 (1s) Index",3,1],["1HZ25V","Volatility 25 (1s) Index",2,1],["1HZ30V","Volatility 30 (1s) Index",3,1],["1HZ50V","Volatility 50 (1s) Index",2,1],["1HZ75V","Volatility 75 (1s) Index",2,1],["1HZ90V","Volatility 90 (1s) Index",3,1],["1HZ100V","Volatility 100 (1s) Index",2,1]];
+var TABS=[["md","Matches / Differs"],["rf","Rise / Fall"],["eo","Even / Odd"],["ou","Over / Under"]];
+var ACC={matches:["md","rf","eo","ou"],rfeo:["rf","eo","ou"],ou:["ou"]};
+var WIN=[20,30,40,50,60,80,100];
+var GO=80; /* Matches: strength score at or above this = TRADE NOW, below = SIGNAL NOT STRONG */
+var DS={q:[],mk:"1HZ10V",tab:null,mdSide:"differs",ou:{side:"over",b:4},phase:"idle",scan:0,res:[],sig:null,t0:0,src:"",ws:null,iv:null,sim:null,to:null,scT:null,pip:2};
+function mk(){return MK.filter(function(m){return m[0]===DS.mk})[0]}
+function digs(){return DS.q.map(function(v){var t=v.toFixed(DS.pip||mk()[2]);return +t.charAt(t.length-1)})}
+function stats(w){var d=digs().slice(-w),c=[0,0,0,0,0,0,0,0,0,0];d.forEach(function(x){c[x]++});return{n:d.length||1,c:c}}
+function rfc(w){var q=DS.q.slice(-(w+1)),u=0,f=0;for(var i=1;i<q.length;i++){if(q[i]>q[i-1])u++;else if(q[i]<q[i-1])f++}return[u,f]}
+function pick(t,w){var a=stats(w),c=a.c,n=a.n;
+if(t==="md")return DS.mdSide==="matches"?c.indexOf(Math.max.apply(null,c)):c.indexOf(Math.min.apply(null,c));
+if(t==="rf"){var r=rfc(w);return r[0]>=r[1]?"RISE":"FALL"}
+if(t==="eo"){var e=c[0]+c[2]+c[4]+c[6]+c[8];return e>=n-e?"EVEN":"ODD"}
+return DS.ou.side+DS.ou.b}
+function pct(t,k,w){var a=stats(w),c=a.c,n=a.n;
+if(t==="md")return DS.mdSide==="matches"?c[k]/n*100:100-c[k]/n*100;
+if(t==="rf"){var r=rfc(w),m=r[0]+r[1]||1;return(k==="RISE"?r[0]:r[1])/m*100}
+if(t==="eo"){var e=c[0]+c[2]+c[4]+c[6]+c[8];return(k==="EVEN"?e:n-e)/n*100}
+var o=0;for(var i=0;i<10;i++){if(DS.ou.side==="over"?i>DS.ou.b:i<DS.ou.b)o+=c[i]}return o/n*100}
+function expd(t){if(t==="md")return DS.mdSide==="matches"?10:90;if(t==="ou")return DS.ou.side==="over"?(9-DS.ou.b)*10:DS.ou.b*10;return 50}
+function finish(){var t=DS.tab,v={},k,best=null,bc=0;DS.res.forEach(function(x){v[x]=(v[x]||0)+1});for(k in v){if(v[k]>bc){bc=v[k];best=k}}
+var p=0;WIN.forEach(function(w){p+=pct(t,best,w)});p/=WIN.length;
+var lab={md:DS.mdSide==="matches"?"MATCHES DIGIT":"DIFFERS DIGIT",rf:"RISE / FALL",eo:"EVEN / ODD",ou:"OVER / UNDER"}[t];
+var val=t==="rf"?best+(best==="RISE"?" \u25B2":" \u25BC"):t==="ou"?best.replace(/(over|under)/,function(m){return m.toUpperCase()+" "}):String(best);
+DS.sig={l:lab,v:val,p:p,e:expd(t),sc:(t==="md"&&DS.mdSide==="matches")?Math.max(0,Math.min(100,Math.round((p-10)/10*100))):null};if(DS.sig.sc!==null)DS.sig.go=DS.sig.sc>=GO;DS.phase="valid";DS.t0=Date.now()}
+function startScan(){if(DS.phase==="scan"||DS.q.length<20||!DS.tab)return;clearInterval(DS.scT);DS.phase="scan";DS.scan=0;DS.res=[];DS.sig=null;paintSig();
+DS.scT=setInterval(function(){DS.res.push(pick(DS.tab,WIN[DS.scan]));DS.scan++;if(DS.scan>=7){clearInterval(DS.scT);finish()}paintSig()},1300)}
+function resetSig(){clearInterval(DS.scT);DS.phase="idle";DS.sig=null;DS.scan=0;paintSig()}
+function loop(){if(DS.phase==="valid"&&Date.now()-DS.t0>=9000){DS.phase="invalid";paintSig()}}
+function paintSig(){var e=document.getElementById("dsig");if(!e)return;var ph=DS.phase,s=DS.sig,col=ph==="valid"?"#22d3a6":ph==="invalid"?"#ef4444":ph==="scan"?"#60a5fa":"#6b7bb8",mid;if(ph==="valid"&&s&&s.go===false)col="#fbbf24";
+if(ph==="scan")mid='<div class="dl">SCANNING</div><div class="dv" style="font-size:3.2rem">'+DS.scan+'<small style="font-size:1.3rem;opacity:.6">/7</small></div><div class="dl">ANALYZING TICKS</div>';
+else if(s)mid='<div class="dl">'+s.l+'</div><div class="dv" style="font-size:'+(s.v.length>2?'2.1rem':(s.sc!==null?'5.2rem':'6.2rem'))+'">'+s.v+'</div>'+(s.sc!==null?'<div class="dp" style="color:'+col+';line-height:1.1;font-size:'+(s.go?'1.8rem':'1.1rem')+'">'+(s.go?'TRADE NOW':'SIGNAL NOT<br>STRONG')+'</div>':'<div class="dp" style="color:'+col+'">'+s.p.toFixed(1)+'%</div>');
+else mid='<div class="dl">READY</div><div class="dv" style="font-size:2.4rem">SCAN</div><div class="dl">PRESS THE BUTTON</div>';
+e.innerHTML='<svg viewBox="-10 -10 220 220" class="ring'+(ph==="valid"?' v':'')+'" style="--c:'+col+';filter:drop-shadow(0 0 14px '+col+'aa)"><defs><linearGradient id="bz" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f6ff"/><stop offset=".3" stop-color="#7d89b9"/><stop offset=".55" stop-color="#252d5c"/><stop offset=".8" stop-color="#a3aedb"/><stop offset="1" stop-color="#171d42"/></linearGradient><radialGradient id="ds" cx=".5" cy=".38" r=".75"><stop offset="0" stop-color="#2a3874"/><stop offset=".6" stop-color="#0c1236"/><stop offset="1" stop-color="#03050e"/></radialGradient><radialGradient id="gl" cx=".5" cy=".5" r=".5"><stop offset=".72" stop-color="'+col+'" stop-opacity=".4"/><stop offset="1" stop-color="'+col+'" stop-opacity="0"/></radialGradient><linearGradient id="sw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="'+col+'" stop-opacity="0"/><stop offset="1" stop-color="'+col+'" stop-opacity=".7"/></linearGradient></defs><circle cx="100" cy="100" r="108" fill="url(#gl)"/><circle cx="100" cy="100" r="98" fill="url(#bz)"/><circle cx="100" cy="100" r="93.5" fill="#070b1f"/><circle cx="100" cy="100" r="88" fill="none" stroke="#56649f" stroke-width="4" stroke-dasharray="1.4 7.8"/><circle cx="100" cy="100" r="88" fill="none" stroke="#d3daff" stroke-width="7" stroke-dasharray="2.2 43.8"/><circle cx="100" cy="100" r="76" fill="none" stroke="#10173a" stroke-width="14"/><circle cx="100" cy="100" r="76" fill="none" stroke="'+col+'" stroke-width="12"/><circle cx="100" cy="100" r="68.5" fill="none" stroke="'+col+'" stroke-opacity=".55" stroke-width="1.5"/><circle cx="100" cy="100" r="67" fill="url(#ds)" stroke="#000" stroke-width="2"/>'+(ph==="scan"?'<circle cx="100" cy="100" r="22" fill="none" stroke="'+col+'" stroke-opacity=".3"/><circle cx="100" cy="100" r="44" fill="none" stroke="'+col+'" stroke-opacity=".3"/><g class="sweep"><path d="M100 100 L100 33 A67 67 0 0 1 167 100 Z" fill="url(#sw)"/></g>':'')+'<path d="M45 78 A60 60 0 0 1 155 78" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="3" stroke-linecap="round"/><ellipse cx="100" cy="58" rx="44" ry="15" fill="#fff" opacity=".07"/></svg><div class="mid" style="--c:'+col+';opacity:'+(ph==="invalid"?.4:1)+'">'+mid+'</div>';
+var b=ph==="scan"?"SCANNING MARKET":ph==="valid"?(s&&s.sc!==null?(s.go?"TRADE NOW \u00B7 SIGNAL VALID":"SIGNAL NOT STRONG"):"SIGNAL VALID"):ph==="invalid"?"SIGNAL EXPIRED \u2014 SCAN AGAIN":"READY TO SCAN";
+document.getElementById("dinfo").innerHTML='<div class="vb" style="background:'+col+';color:'+(ph==="valid"||ph==="scan"?"#06121a":"#fff")+'">'+b+'</div>'+((s&&ph!=="scan")?(s.sc!==null?'<p style="color:var(--tx)">Signal strength <b>'+s.sc+'/100</b> \u00B7 digit '+s.v+' appeared in '+s.p.toFixed(1)+'% of recent ticks (normal: 10%)</p><p style="font-size:.8rem">Strength: 0 = as often as normal, 100 = twice as often or more. TRADE NOW appears at '+GO+' or above. It shows how unusual the digit is lately and is not a win probability.</p>':'<p style="color:var(--tx)">Observed '+s.p.toFixed(1)+'% \u00B7 Expected '+s.e+'%</p>'):'')+(DS.src.indexOf("Live feed unavailable")===0?'<p class="note">'+DS.src+'</p>':'');
+var sb=document.getElementById("dscan");if(sb){sb.disabled=ph==="scan"||DS.q.length<20;sb.textContent=ph==="scan"?"SCANNING...":"\u26A1 SCAN MARKET"}}
+function feed(){var d=digs(),a=stats(100),m=Math.max.apply(null,a.c)||1,b=document.getElementById("dbars");
+if(b)b.innerHTML=a.c.map(function(v,i){return '<div class="bar"><div class="bt"><i style="height:'+Math.round(v/m*100)+'%"></i></div><span>'+i+'</span></div>'}).join('');
+var t=document.getElementById("dstrip");if(t)t.textContent="Last digits: "+d.slice(-15).join(" ");
+var sb=document.getElementById("dscan");if(sb&&DS.phase!=="scan")sb.disabled=DS.q.length<20}
+function paintTabs(){var e=document.getElementById("dtabs");if(!e)return;var A=ACC[S.plan||"matches"];
+e.innerHTML=TABS.map(function(t){var ok=A.indexOf(t[0])>-1;return '<button class="btn'+(DS.tab===t[0]?'':' g')+'" style="min-width:130px" '+(ok?'onclick="setTab(\''+t[0]+'\')"':'disabled')+'>'+(ok?'':'\uD83D\uDD12 ')+t[1]+'</button>'}).join('')}
+function paintOpt(){var e=document.getElementById("dopt");if(!e)return;var h="";
+function B(on,l,fn){return '<button class="btn'+(on?'':' g')+'" style="padding:8px 14px" onclick="'+fn+'">'+l+'</button>'}
+if(DS.tab==="md")h=B(DS.mdSide==="matches","Matches","setMd(\'matches\')")+B(DS.mdSide==="differs","Differs","setMd(\'differs\')");
+else if(DS.tab==="ou"){h=B(DS.ou.side==="over","Over","setOu(\'over\')")+B(DS.ou.side==="under","Under","setOu(\'under\')")+'<span class="note" style="flex-basis:100%;color:var(--mu)">Choose your '+DS.ou.side+' digit</span><div style="flex-basis:100%;display:flex;gap:6px;flex-wrap:wrap">';var lo=DS.ou.side==="over"?0:1,hi=DS.ou.side==="over"?8:9;for(var i=lo;i<=hi;i++)h+=B(DS.ou.b===i,i,"setB("+i+")");h+='</div>'}
+e.innerHTML=h;e.style.display=h?"flex":"none"}
+function setTab(t){DS.tab=t;paintTabs();paintOpt();resetSig()}
+function setMd(v){DS.mdSide=v;paintOpt();resetSig()}
+function setOu(v){DS.ou.side=v;if(v==="over"&&DS.ou.b>8)DS.ou.b=8;if(v==="under"&&DS.ou.b<1)DS.ou.b=1;paintOpt();resetSig()}
+function setB(i){DS.ou.b=i;paintOpt();resetSig()}
+function setMk(m){DS.mk=m;connect()}
+function setPlan(p){S.plan=p;DS.tab=ACC[p][0];paintTabs();paintOpt();resetSig()}
+function backDash(){go(S.status==="pending"?"wait":"home")}
+function welcome(){return S.account?'<div class="card" style="border-color:var(--ac);margin-bottom:14px"><b>Welcome!</b><p style="margin:4px 0 0">Proceed with the Deriv account you used to log in.</p></div>':''}
+function killWs(){if(DS.ws){try{DS.ws.onclose=null;DS.ws.onerror=null;DS.ws.close()}catch(e){}DS.ws=null}}
+function sim(){if(!PREVIEW){killWs();clearTimeout(DS.to);clearInterval(DS.sim);DS.q=[];DS.src="Live feed unavailable. Check your connection and select the market again.";feed();paintSig();return}
+if(DS.sim&&DS.src.indexOf("Simulated")===0)return;killWs();clearTimeout(DS.to);clearInterval(DS.sim);DS.q=[];DS.pip=mk()[2];var p=1000;for(var i=0;i<100;i++){p+=(Math.random()-.5)*2;DS.q.push(p)}
+DS.src="Simulated data (live feed unavailable here)";feed();paintSig();DS.sim=setInterval(function(){DS.q.push(DS.q[DS.q.length-1]+(Math.random()-.5)*2);if(DS.q.length>120)DS.q.shift();feed()},mk()[3]*1000)}
+function connect(){clearInterval(DS.sim);clearTimeout(DS.to);killWs();DS.q=[];DS.src="Connecting...";var got=false,w;resetSig();feed();
+try{w=new WebSocket("wss://ws.derivws.com/websockets/v3?app_id="+APP_ID)}catch(e){return sim()}
+DS.ws=w;
+w.onopen=function(){w.send(JSON.stringify({ticks_history:DS.mk,adjust_start_time:1,count:100,end:"latest",style:"ticks",subscribe:1}))};
+w.onmessage=function(m){var d;try{d=JSON.parse(m.data)}catch(e){return}if(d.error)return sim();
+if(d.msg_type==="history"){got=true;DS.q=d.history.prices.map(Number);DS.pip=d.pip_size||mk()[2];DS.src="Live \u00B7 Deriv";feed();paintSig()}
+else if(d.msg_type==="tick"){DS.q.push(+d.tick.quote);if(DS.q.length>120)DS.q.shift();DS.pip=d.tick.pip_size||DS.pip;feed()}};
+w.onerror=function(){if(!got)sim()};
+DS.to=setTimeout(function(){if(!got)sim()},3500)}
+function stopDash(){clearInterval(DS.iv);clearInterval(DS.sim);clearInterval(DS.scT);clearTimeout(DS.to);killWs()}
+function startDash(){var A=ACC[S.plan||"matches"];if(!DS.tab||A.indexOf(DS.tab)<0)DS.tab=A[0];paintTabs();paintOpt();clearInterval(DS.iv);DS.iv=setInterval(loop,250);connect()}
+function mopt(m){return '<option value="'+m[0]+'"'+(DS.mk===m[0]?' selected':'')+'>'+m[1]+'</option>'}
+V.dash=function(){return '<div style="margin-bottom:14px"><button class="btn g" onclick="backDash()">&larr; Back</button></div>'+welcome()+'<h2>Signal dashboard</h2>'+(PREVIEW?'<p class="note">Preview mode: pick a plan to see which sections lock.</p><select onchange="setPlan(this.value)">'+PLANS.map(function(p){return '<option value="'+p.id+'"'+((S.plan||"matches")===p.id?' selected':'')+'>'+p.name+' ($'+p.price+')</option>'}).join('')+'</select>':'')+'<select onchange="setMk(this.value)"><optgroup label="Volatility Indices">'+MK.filter(function(m){return m[3]===2}).map(mopt).join('')+'</optgroup><optgroup label="Volatility Indices (1s)">'+MK.filter(function(m){return m[3]===1}).map(mopt).join('')+'</optgroup></select><div class="tabs" id="dtabs" style="flex-wrap:wrap"></div><div id="dopt"></div><div class="card" style="text-align:center"><div id="dsig"></div><div id="dinfo"></div><button class="btn scan" id="dscan" onclick="startScan()">SCAN MARKET</button></div><div class="card" style="margin-top:14px"><b>Last-digit frequency (last 100 ticks)</b><div class="bars" id="dbars" style="margin-top:10px"></div><p id="dstrip" style="word-break:break-all;font-size:.85rem"></p></div><div class="ft">Analysis only. Digit outcomes are random and no signal guarantees profit. Trade responsibly.</div>'};
+var ST=[["home","Welcome"],["login","Connect"],["plans","Plan"],["pay","Pay"],["wait","Approval"],["dash","Dashboard"]];
+function render(){
+document.getElementById("steps").innerHTML=ST.map(function(s){return '<span class="'+(s[0]===S.view?'on':'')+'">'+s[1]+'</span>'}).join('');
+document.getElementById("app").innerHTML=V[S.view]();initHome();stopDash();if(S.view==="dash")startDash();applyLang()}
+load();parseOAuth();
+if(S.status==="pending"&&S.account)S.view="wait";else if(S.status==="approved"&&S.account)S.view="dash";
+render();
+</script>
+</body>
+</html>
