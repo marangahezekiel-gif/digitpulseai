@@ -13,7 +13,8 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
-.w{max-width:960px;margin:0 auto;padding:20px 16px 48px}
+.w{max-width:960px;margin:0 auto;padding-block:20px 96px;padding-inline:max(clamp(16px,5vw,32px),env(safe-area-inset-left,0px)) max(clamp(16px,5vw,32px),env(safe-area-inset-right,0px))}
+html,body{overflow-x:clip}
 nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
 .logo{font-weight:800;font-size:1.25rem}.logo b{color:var(--ac)}
 .pill{font-size:.8rem;color:var(--mu);border:1px solid var(--bd);border-radius:99px;padding:4px 10px}
@@ -24,20 +25,18 @@ p{color:var(--mu)}
 .btn.g{background:transparent;border:1px solid var(--bd);color:var(--tx)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px}
-.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr))}
 .plan{cursor:pointer;position:relative;transition:.15s}
 .plan:hover,.plan.sel{border-color:var(--ac);transform:translateY(-2px)}
 .price{font-size:2rem;font-weight:800}.price small{font-size:.9rem;color:var(--mu);font-weight:400}
 .tag{position:absolute;top:-10px;right:14px;background:var(--ac);color:#04221b;font-size:.7rem;font-weight:800;padding:2px 10px;border-radius:99px}
 ul{padding-left:18px;color:var(--mu)}
 .row{display:flex;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px;margin:6px 0 14px}
-.row code{flex:1;word-break:break-all;font-size:.9rem}
+.row code{flex:1;min-width:0;word-break:break-all;font-size:.9rem}
 .row button{border:0;background:var(--ac2);color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer}
 .tabs{display:flex;gap:8px;margin:14px 0}
 .tabs .btn{flex:1}
 .hid{display:none}
-.steps{display:flex;gap:6px;margin-bottom:18px;font-size:.75rem;color:var(--mu);flex-wrap:wrap}
-.steps span{padding:3px 10px;border-radius:99px;border:1px solid var(--bd)}.steps .on{background:var(--ac);color:#04221b;border-color:var(--ac);font-weight:700}
 .wait{text-align:center}.wait .ic{font-size:3rem}
 .note{font-size:.8rem;color:var(--wr)}
 .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
@@ -65,9 +64,10 @@ input,textarea,select{width:100%;background:var(--bg);color:var(--tx);border:1px
 .lock{position:relative;margin-top:14px;border:1px dashed var(--bd);border-radius:10px;padding:14px;text-align:center}
 .lock .bl{filter:blur(6px);font-weight:700;user-select:none}.lock .btn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap}
 details{border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin:8px 0;background:var(--card)}summary{cursor:pointer;font-weight:700}details p{margin:8px 0 0}
-.wa{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));background:#25d366;color:#04230f;font-weight:800;font-size:.75rem;border-radius:99px;padding:7px 12px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.3);z-index:9}
+.wa{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));background:#25d366;color:#04230f;font-weight:800;font-size:.75rem;border-radius:99px;padding:7px 12px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.3);z-index:9}
 
-#dsig{position:relative;width:min(88vw,380px);margin:6px auto 0}.ring{width:100%;display:block;transition:filter .3s}
+#dsig{position:relative;width:min(100%,380px);margin:6px auto 0}
+.card:has(#dsig){padding-inline:10px}.ring{width:100%;display:block;transition:filter .3s}
 .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;transition:opacity .3s}
 .dl{font-size:.7rem;color:#9fb0ff;letter-spacing:2px;font-weight:700}.dv{font-weight:900;line-height:1.02;text-shadow:0 0 24px var(--c),0 4px 0 rgba(0,0,0,.55)}.dp{font-size:1.9rem;font-weight:900;letter-spacing:1px;text-shadow:0 0 14px var(--c)}
 .vb{display:inline-block;padding:7px 18px;border-radius:99px;font-weight:900;margin-top:14px;font-size:.85rem;letter-spacing:1px}
@@ -81,7 +81,6 @@ details{border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin:8
 <body>
 <div class="w">
 <nav><div class="logo">Digitpulse<b>Ai</b></div><button class="pill" id="lg" onclick="toggleLang()" style="cursor:pointer;background:none;color:var(--tx)">SW</button></nav>
-<div class="steps" id="steps"></div>
 <main id="app"></main>
 </div>
 <a class="wa" href="https://wa.me/254741092009" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">&#128172; Chat with us</a>
@@ -245,10 +244,8 @@ else if(st==="expired"){t="Access ended";msg="Your yearly access has ended. Choo
 else{t="Waiting for approval";msg='We received your payment request for <b style="color:var(--tx)">'+(p?p.name:'')+'</b>. Once you send your screenshot on WhatsApp, we approve your access. You do not need to pay again &mdash; just return to this page.';acts=wa+'<button class="btn g" onclick="checkNow(this)">Check status</button>'}
 var note=(st==="pending"&&S.regErr&&!PREVIEW)?'<p class="note">We could not register your request automatically. Please make sure your screenshot reaches us on WhatsApp and we will approve you manually. <a href="#" onclick="register();return false" style="color:var(--wr)">Try again</a></p>':((st==="pending"&&S.reg)?'<p class="note" style="color:var(--ac)">Request registered. This page updates by itself once you are approved.</p>':'');
 return '<div class="card wait" style="max-width:480px;margin:0 auto"><div class="ic">'+(st==="pending"||!st?'&#9203;':'&#9888;&#65039;')+'</div><h2>'+t+'</h2><p>'+msg+'</p>'+note+'<div class="acts" style="justify-content:center">'+acts+pv+'</div></div>'}
-var ST=[["home","Welcome"],["login","Connect"],["plans","Plan"],["pay","Pay"],["wait","Approval"],["dash","Dashboard"]];
 function render(){
 if(S.view==="dash"&&!PREVIEW&&S.status!=="approved")S.view=waitish()?"wait":(S.account?"plans":"home");
-document.getElementById("steps").innerHTML=ST.map(function(s){return '<span class="'+(s[0]===S.view?'on':'')+'">'+s[1]+'</span>'}).join('');
 document.getElementById("app").innerHTML=V[S.view]();initHome();initWait();stopDash();if(S.view==="dash")startDash();applyLang()}
 load();ensureCid();parseOAuth();
 if(S.account&&(S.status==="pending"||S.status==="rejected"||S.status==="revoked"||S.status==="expired"))S.view="wait";else if(S.status==="approved"&&S.account)S.view="dash";
