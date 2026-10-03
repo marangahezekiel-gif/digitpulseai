@@ -1,0 +1,7 @@
+{
+  "name": "digitpulseai",
+  "private": true,
+  "version": "1.0.0",
+  "description": "DigitpulseAi front end with a small payment-approval backend",
+  "engines": { "node": ">=18" }
+}

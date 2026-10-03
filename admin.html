@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>DigitpulseAi Admin</title>
+<style>
+/* Layout: one calm column. Summary tiles first, then filters and search, then one card per payment request. */
+:root{--bg:#0b1020;--card:#141b34;--soft:#0f1630;--bd:#263056;--tx:#e8ecff;--mu:#9aa6d6;--ac:#22d3a6;--ac2:#6366f1;--wr:#fbbf24;--bad:#f87171;color-scheme:dark;
+--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f6ff;--card:#fff;--soft:#eef1ff;--bd:#d9def5;--tx:#141b34;--mu:#5b6591;--ac:#0d9f7e;--ac2:#4f46e5;--wr:#b45309;--bad:#dc2626;color-scheme:light}}
+:root[data-theme="light"]{--bg:#f4f6ff;--card:#fff;--soft:#eef1ff;--bd:#d9def5;--tx:#141b34;--mu:#5b6591;--ac:#0d9f7e;--ac2:#4f46e5;--wr:#b45309;--bad:#dc2626;color-scheme:light}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.w{max-width:980px;margin:0 auto;padding-inline:16px;padding-block:20px 56px}
+.top{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.logo{font-weight:800;font-size:1.2rem}.logo b{color:var(--ac)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:16px}
+.tile{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px}
+.tile .n{font-size:1.9rem;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.tile .l{color:var(--mu);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.pill{border:1px solid var(--bd);background:transparent;color:var(--tx);border-radius:99px;padding:6px 14px;cursor:pointer;font:inherit;font-size:.85rem}
+.pill.on{background:var(--ac);color:#04221b;border-color:var(--ac);font-weight:700}
+input,select{background:var(--soft);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:10px;font:inherit;min-width:0;max-width:100%}
+.search{flex:1 1 200px}
+.item{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:10px;display:grid;gap:10px;min-width:0}
+.hd{display:flex;gap:10px;justify-content:space-between;align-items:flex-start}
+.contact{font-weight:700;font-size:1.05rem;overflow-wrap:anywhere;min-width:0}
+.meta{display:flex;gap:4px 14px;flex-wrap:wrap;color:var(--mu);font-size:.85rem}
+.chip{flex:none;border-radius:99px;padding:2px 10px;font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.chip.pending{background:color-mix(in srgb,var(--wr) 22%,transparent);color:var(--wr)}
+.chip.approved{background:color-mix(in srgb,var(--ac) 22%,transparent);color:var(--ac)}
+.chip.closed{background:color-mix(in srgb,var(--bad) 20%,transparent);color:var(--bad)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:10px;padding:10px 16px;font:inherit;font-weight:700;cursor:pointer;background:var(--ac2);color:#fff;text-decoration:none;display:inline-block}
+.btn.ok{background:var(--ac);color:#04221b}
+.btn.bad{background:var(--bad);color:#fff}
+.btn.g{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+.btn.sm{padding:8px 12px;font-size:.85rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--ac2);outline-offset:2px}
+.mono{font-family:var(--mono);font-size:.78rem}
+.empty{text-align:center;color:var(--mu);padding:36px 12px;border:1px dashed var(--bd);border-radius:12px}
+.login{max-width:420px;margin:12vh auto 0;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:22px;display:grid;gap:12px}
+.login p{margin:0}
+.msg{color:var(--bad);font-size:.9rem;min-height:1.2em}
+.banner{background:color-mix(in srgb,var(--wr) 18%,transparent);color:var(--wr);border-radius:10px;padding:8px 12px;font-size:.85rem;margin-bottom:14px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(16px);background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;font-weight:700;z-index:10;max-width:calc(100% - 32px)}
+.toast.on{opacity:1;transform:translateX(-50%)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="w" id="root"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(function(){
+"use strict";
+var DEMO_ONLY=false; /* the preview build sets this to true: sample data, no server */
+var PLANS={matches:["Matches / Differs",150],rfeo:["Rise/Fall + Even/Odd",100],ou:["Over / Under",80]};
+var METH={usdt:"USDT TRC20",mpesa:"M-Pesa"};
+var KEY="",DEMO=false,ITEMS=[],FILTER="pending",Q="",TIMER=null,DEMO_ITEMS=[],els={};
+var root=document.getElementById("root"),toastEl=document.getElementById("toast");
+
+/* ---------- small helpers (all text goes in as text, never as HTML) ---------- */
+function h(tag,attrs,kids){
+  var e=document.createElement(tag),k;
+  for(k in attrs||{}){var v=attrs[k];
+    if(k.slice(0,2)==="on")e.addEventListener(k.slice(2),v);
+    else if(v!==false&&v!=null)e.setAttribute(k,v)}
+  (kids||[]).forEach(function(c){if(c==null||c===false)return;e.appendChild(typeof c==="object"?c:document.createTextNode(String(c)))});
+  return e}
+function btn(label,cls,fn){return h("button",{"class":"btn "+cls,type:"button",onclick:fn},[label])}
+function guarded(label,cls,fn){
+  var armed=false,t=null,b=btn(label,cls,function(){
+    if(!armed){armed=true;b.textContent="Tap again to confirm";t=setTimeout(function(){armed=false;b.textContent=label},4000);return}
+    clearTimeout(t);fn()});
+  return b}
+function toast(m){toastEl.textContent=m;toastEl.className="toast on";clearTimeout(toast.t);toast.t=setTimeout(function(){toastEl.className="toast"},2800)}
+function when(ms){var m=Math.round((Date.now()-ms)/6e4);if(m<1)return"just now";if(m<60)return m+" min ago";var hr=Math.round(m/60);if(hr<24)return hr+" h ago";return Math.round(hr/24)+" d ago"}
+function day(ms){return new Date(ms).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})}
+function grp(s){return s==="pending"?"pending":s==="approved"?"approved":"closed"}
+function errText(e){
+  if(e.status===401)return"That key is not correct.";
+  if(e.status===429)return"Too many wrong attempts. Try again in about 15 minutes.";
+  if(e.status===503)return"Admin is not set up yet. Add ADMIN_KEY and the database in Vercel, then redeploy.";
+  return"Could not reach the server. Check your connection and try again."}
+
+/* ---------- server calls ---------- */
+function api(method,payload){
+  if(DEMO)return demoApi(method,payload);
+  return fetch("/api/admin",{method:method,cache:"no-store",headers:{"x-admin-key":KEY,"Content-Type":"application/json"},body:payload?JSON.stringify(payload):undefined})
+    .then(function(r){return r.json().catch(function(){return{}}).then(function(j){if(!r.ok){var e=new Error(j.error||"http");e.status=r.status;throw e}return j})})}
+function sample(){var n=Date.now();return[
+  {id:"a1b2c3d4e5f60718293a4b5c6d7e8f90",plan:"matches",method:"mpesa",contact:"0700 000 001",status:"pending",createdAt:n-14*6e4},
+  {id:"b2c3d4e5f60718293a4b5c6d7e8f90a1",plan:"rfeo",method:"usdt",contact:"0700 000 002",status:"pending",createdAt:n-5*36e5},
+  {id:"c3d4e5f60718293a4b5c6d7e8f90a1b2",plan:"ou",method:"mpesa",contact:"0700 000 003",status:"approved",createdAt:n-20*864e5,approvedAt:n-20*864e5,expiresAt:n+345*864e5},
+  {id:"d4e5f60718293a4b5c6d7e8f90a1b2c3",plan:"matches",method:"usdt",contact:"0700 000 004",status:"rejected",createdAt:n-3*864e5},
+  {id:"e5f60718293a4b5c6d7e8f90a1b2c3d4",plan:"ou",method:"mpesa",contact:"0700 000 005",status:"expired",createdAt:n-400*864e5,expiresAt:n-35*864e5}]}
+function demoApi(method,b){
+  return new Promise(function(res,rej){setTimeout(function(){
+    if(method==="GET")return res({items:JSON.parse(JSON.stringify(DEMO_ITEMS))});
+    var i=DEMO_ITEMS.filter(function(x){return x.id===b.id})[0],now=Date.now();
+    if(b.action==="delete"){DEMO_ITEMS=DEMO_ITEMS.filter(function(x){return x.id!==b.id});return res({ok:true})}
+    if(!i)return rej(new Error("missing"));
+    if(b.action==="approve"){i.status="approved";i.plan=PLANS[b.plan]?b.plan:i.plan;i.approvedAt=now;i.expiresAt=now+365*864e5}
+    else if(b.action==="reject")i.status="rejected";
+    else if(b.action==="revoke"){i.status="revoked";i.expiresAt=null}
+    res({ok:true})},120)})}
+
+/* ---------- screens ---------- */
+function loginView(msg){
+  stopTimer();root.innerHTML="";
+  var box=h("div",{"class":"login"}),m=h("p",{"class":"msg",role:"alert"},[msg||""]);
+  box.appendChild(h("div",{"class":"logo"},["Digitpulse",h("b",{},["Ai"])," Admin"]));
+  if(DEMO_ONLY){
+    box.appendChild(h("p",{style:"color:var(--mu)"},["This is a preview with sample data. Nothing is saved and no real clients are shown."]));
+    box.appendChild(h("button",{"class":"btn",type:"button",onclick:function(){DEMO=true;DEMO_ITEMS=sample();load(false)}},["Open the demo"]));
+  }else{
+    var inp=h("input",{id:"key",type:"password",placeholder:"Admin key",autocomplete:"current-password","aria-label":"Admin key"});
+    var go=h("button",{"class":"btn",type:"button",id:"signin"},["Sign in"]);
+    var submit=function(){var v=inp.value.trim();if(!v)return;KEY=v;go.disabled=true;load(true)};
+    go.addEventListener("click",submit);
+    inp.addEventListener("keydown",function(e){if(e.key==="Enter")submit()});
+    box.appendChild(inp);box.appendChild(go);
+  }
+  box.appendChild(m);root.appendChild(box)}
+function tile(k,label){var n=h("div",{"class":"n"},["0"]);els.tiles[k]=n;return h("div",{"class":"tile"},[n,h("div",{"class":"l"},[label])])}
+function panel(){
+  root.innerHTML="";els.tiles={};els.pills={};
+  root.appendChild(h("div",{"class":"top"},[
+    h("div",{"class":"logo"},["Digitpulse",h("b",{},["Ai"])," Admin"]),
+    h("div",{"class":"acts"},[btn("Refresh","g sm",function(){refresh(false)}),btn("Sign out","g sm",function(){signOut()})])]));
+  if(DEMO)root.appendChild(h("div",{"class":"banner"},["Demo data. Nothing here is saved."]));
+  root.appendChild(h("div",{"class":"tiles"},[tile("pending","Waiting"),tile("approved","Active"),tile("closed","Closed")]));
+  var bar=h("div",{"class":"bar"});
+  [["pending","Waiting"],["approved","Active"],["closed","Closed"],["all","All"]].forEach(function(f){
+    var p=h("button",{"class":"pill",type:"button","data-l":f[1],onclick:function(){FILTER=f[0];renderList()}},[f[1]]);
+    els.pills[f[0]]=p;bar.appendChild(p)});
+  var q=h("input",{"class":"search",id:"q",type:"search",placeholder:"Search number, plan or ID","aria-label":"Search requests"});
+  q.addEventListener("input",function(){Q=q.value;renderList()});
+  bar.appendChild(q);root.appendChild(bar);
+  els.list=h("div",{id:"list"});root.appendChild(els.list);
+  renderList()}
+function renderList(){
+  var c={pending:0,approved:0,closed:0,all:ITEMS.length};
+  ITEMS.forEach(function(i){c[grp(i.status)]++});
+  ["pending","approved","closed"].forEach(function(k){els.tiles[k].textContent=String(c[k])});
+  Object.keys(els.pills).forEach(function(k){var p=els.pills[k];p.textContent=p.getAttribute("data-l")+" ("+c[k]+")";p.className="pill"+(FILTER===k?" on":"")});
+  var q=Q.toLowerCase(),rows=ITEMS.filter(function(i){
+    return(FILTER==="all"||grp(i.status)===FILTER)&&(!q||[i.contact,i.id,(PLANS[i.plan]||[""])[0],METH[i.method]||"",i.status].join(" ").toLowerCase().indexOf(q)>-1)});
+  els.list.innerHTML="";
+  if(!rows.length)els.list.appendChild(h("div",{"class":"empty"},[ITEMS.length?"Nothing matches this view.":"No payment requests yet. They appear here when a client taps \"I have made the payment\"."]));
+  rows.forEach(function(i){els.list.appendChild(card(i))})}
+function card(i){
+  var pl=PLANS[i.plan]||[i.plan,0],st=i.status,acts=[];
+  var sel=h("select",{"aria-label":"Plan to grant"},Object.keys(PLANS).map(function(k){
+    var o=h("option",{value:k},[PLANS[k][0]+" ($"+PLANS[k][1]+")"]);if(k===i.plan)o.selected=true;return o}));
+  if(st==="approved"){acts.push(guarded("Remove access","bad sm",function(){act("revoke",i.id)}))}
+  else{
+    acts.push(sel);
+    acts.push(btn(st==="pending"?"Approve":"Approve again","ok sm",function(){act("approve",i.id,sel.value)}));
+    if(st==="pending")acts.push(btn("Reject","g sm",function(){act("reject",i.id)}))}
+  var d=String(i.contact||"").replace(/\D/g,"");if(d.length===10&&d.charAt(0)==="0")d="254"+d.slice(1);
+  if(d.length>=9)acts.push(h("a",{"class":"btn g sm",href:"https://wa.me/"+d,target:"_blank",rel:"noopener"},["WhatsApp"]));
+  acts.push(guarded("Delete","g sm",function(){act("delete",i.id)}));
+  var meta=[h("span",{},[pl[0]+" ($"+pl[1]+")"]),h("span",{},[METH[i.method]||String(i.method)]),h("span",{title:new Date(i.createdAt).toLocaleString()},[when(i.createdAt)])];
+  if(st==="approved"&&i.expiresAt)meta.push(h("span",{},["Active until "+day(i.expiresAt)+" ("+Math.max(0,Math.ceil((i.expiresAt-Date.now())/864e5))+" days left)"]));
+  meta.push(h("span",{"class":"mono"},["ID "+String(i.id).slice(0,6)+"..."+String(i.id).slice(-4)]));
+  return h("div",{"class":"item"},[
+    h("div",{"class":"hd"},[h("div",{"class":"contact"},[i.contact||"No contact"]),h("span",{"class":"chip "+grp(st)},[st==="pending"?"waiting":st])]),
+    h("div",{"class":"meta"},meta),h("div",{"class":"acts"},acts)])}
+
+/* ---------- actions ---------- */
+function act(a,id,plan){
+  api("POST",{action:a,id:id,plan:plan}).then(function(){
+    toast({approve:"Approved. The client is unlocked.",reject:"Rejected.",revoke:"Access removed.","delete":"Deleted."}[a]);
+    return refresh(true)}).catch(function(e){
+    if(e.status===401||e.status===429)signOut(errText(e));else toast("That did not go through. Try again.")})}
+function refresh(quiet){
+  return api("GET").then(function(j){ITEMS=j.items||[];if(els.list)renderList();if(!quiet)toast("Updated.")}).catch(function(e){
+    if(e.status===401||e.status===429)signOut(errText(e));else if(!quiet)toast("Could not refresh. Check your connection.")})}
+function load(fromLogin){
+  return api("GET").then(function(j){
+    ITEMS=j.items||[];
+    if(!DEMO){try{sessionStorage.setItem("dpk",KEY)}catch(e){}}
+    panel();startTimer()}).catch(function(e){
+    if(!DEMO)KEY="";
+    try{sessionStorage.removeItem("dpk")}catch(x){}
+    loginView(fromLogin?errText(e):"")})}
+function startTimer(){stopTimer();if(!DEMO)TIMER=setInterval(function(){refresh(true)},30000)}
+function stopTimer(){if(TIMER){clearInterval(TIMER);TIMER=null}}
+function signOut(msg){stopTimer();KEY="";DEMO=false;try{sessionStorage.removeItem("dpk")}catch(e){}loginView(msg||"")}
+
+/* ---------- start ---------- */
+if(!DEMO_ONLY){try{KEY=sessionStorage.getItem("dpk")||""}catch(e){KEY=""}}
+if(KEY)load(false);else loginView("");
+})();
+</script>
+</body>
+</html>
