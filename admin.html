@@ -48,6 +48,12 @@ input,select{background:var(--soft);color:var(--tx);border:1px solid var(--bd);b
 .login p{margin:0}
 .msg{color:var(--bad);font-size:.9rem;min-height:1.2em}
 .banner{background:color-mix(in srgb,var(--wr) 18%,transparent);color:var(--wr);border-radius:10px;padding:8px 12px;font-size:.85rem;margin-bottom:14px}
+.keyrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--soft);border:1px dashed var(--bd);border-radius:10px;padding:8px 10px}
+.keyrow .k{font-family:var(--mono);font-weight:700;letter-spacing:.04em;overflow-wrap:anywhere}
+.keyrow .d{color:var(--mu);font-size:.8rem}
+details.new{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin-bottom:14px}
+details.new summary{cursor:pointer;font-weight:700}
+.nf{display:grid;gap:8px;margin-top:10px}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(16px);background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;font-weight:700;z-index:10;max-width:calc(100% - 32px)}
 .toast.on{opacity:1;transform:translateX(-50%)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -61,7 +67,7 @@ input,select{background:var(--soft);color:var(--tx);border:1px solid var(--bd);b
 "use strict";
 var DEMO_ONLY=false; /* the preview build sets this to true: sample data, no server */
 var PLANS={matches:["Matches / Differs",150],rfeo:["Rise/Fall + Even/Odd",100],ou:["Over / Under",80]};
-var METH={usdt:"USDT TRC20",mpesa:"M-Pesa"};
+var METH={usdt:"USDT TRC20",mpesa:"M-Pesa",manual:"Added by you"};
 var KEY="",DEMO=false,ITEMS=[],FILTER="pending",Q="",TIMER=null,DEMO_ITEMS=[],els={};
 var root=document.getElementById("root"),toastEl=document.getElementById("toast");
 
@@ -89,6 +95,13 @@ function errText(e){
   if(e.status===503)return"Admin is not set up yet. Add ADMIN_KEY and the database in Vercel, then redeploy.";
   return"Could not reach the server. Check your connection and try again."}
 
+function pk(k){k=String(k||"");return"DPAI-"+k.slice(0,4)+"-"+k.slice(4,8)+"-"+k.slice(8)}
+function digits(c){var d=String(c||"").replace(/\D/g,"");if(d.length===10&&d.charAt(0)==="0")d="254"+d.slice(1);return d.length>=9?d:""}
+function sendUrl(contact,k){var t="Your DigitpulseAi access key: "+pk(k)+"\nOpen "+location.origin+" and tap \"Access using a key\". The key works on up to 2 devices. Please keep it private.";return"https://wa.me/"+digits(contact)+"?text="+encodeURIComponent(t)}
+function copyText(t){var ok=function(){toast("Copied.")},fb=function(){var a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){toast("Copy failed. Select and copy it by hand.")}a.remove()};
+  try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}}
+function fakeKey(){var c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",s="",i;for(i=0;i<12;i++)s+=c[Math.floor(Math.random()*32)];return s}
+
 /* ---------- server calls ---------- */
 function api(method,payload){
   if(DEMO)return demoApi(method,payload);
@@ -97,18 +110,20 @@ function api(method,payload){
 function sample(){var n=Date.now();return[
   {id:"a1b2c3d4e5f60718293a4b5c6d7e8f90",plan:"matches",method:"mpesa",contact:"0700 000 001",status:"pending",createdAt:n-14*6e4},
   {id:"b2c3d4e5f60718293a4b5c6d7e8f90a1",plan:"rfeo",method:"usdt",contact:"0700 000 002",status:"pending",createdAt:n-5*36e5},
-  {id:"c3d4e5f60718293a4b5c6d7e8f90a1b2",plan:"ou",method:"mpesa",contact:"0700 000 003",status:"approved",createdAt:n-20*864e5,approvedAt:n-20*864e5,expiresAt:n+345*864e5},
+  {id:"c3d4e5f60718293a4b5c6d7e8f90a1b2",plan:"ou",method:"mpesa",contact:"0700 000 003",status:"approved",createdAt:n-20*864e5,approvedAt:n-20*864e5,expiresAt:n+345*864e5,key:"K7QMWX4RTP9D",deviceCount:1,maxDevices:2},
   {id:"d4e5f60718293a4b5c6d7e8f90a1b2c3",plan:"matches",method:"usdt",contact:"0700 000 004",status:"rejected",createdAt:n-3*864e5},
   {id:"e5f60718293a4b5c6d7e8f90a1b2c3d4",plan:"ou",method:"mpesa",contact:"0700 000 005",status:"expired",createdAt:n-400*864e5,expiresAt:n-35*864e5}]}
 function demoApi(method,b){
   return new Promise(function(res,rej){setTimeout(function(){
     if(method==="GET")return res({items:JSON.parse(JSON.stringify(DEMO_ITEMS))});
     var i=DEMO_ITEMS.filter(function(x){return x.id===b.id})[0],now=Date.now();
+    if(b.action==="create"){var nk=fakeKey(),nn=Date.now();DEMO_ITEMS.unshift({id:("f"+nn.toString(16)+"0000000000000000000000000").slice(0,32),plan:b.plan,method:"manual",contact:b.contact,status:"approved",createdAt:nn,approvedAt:nn,expiresAt:nn+365*864e5,key:nk,deviceCount:0,maxDevices:2});return res({ok:true,key:nk})}
     if(b.action==="delete"){DEMO_ITEMS=DEMO_ITEMS.filter(function(x){return x.id!==b.id});return res({ok:true})}
     if(!i)return rej(new Error("missing"));
-    if(b.action==="approve"){i.status="approved";i.plan=PLANS[b.plan]?b.plan:i.plan;i.approvedAt=now;i.expiresAt=now+365*864e5}
+    if(b.action==="approve"){if(!i.key){i.key=fakeKey();i.deviceCount=0;i.maxDevices=2}i.status="approved";i.plan=PLANS[b.plan]?b.plan:i.plan;i.approvedAt=now;i.expiresAt=now+365*864e5}
     else if(b.action==="reject")i.status="rejected";
     else if(b.action==="revoke"){i.status="revoked";i.expiresAt=null}
+    else if(b.action==="rekey"){i.key=fakeKey();i.deviceCount=0;i.maxDevices=2}
     res({ok:true})},120)})}
 
 /* ---------- screens ---------- */
@@ -136,6 +151,7 @@ function panel(){
     h("div",{"class":"acts"},[btn("Refresh","g sm",function(){refresh(false)}),btn("Sign out","g sm",function(){signOut()})])]));
   if(DEMO)root.appendChild(h("div",{"class":"banner"},["Demo data. Nothing here is saved."]));
   root.appendChild(h("div",{"class":"tiles"},[tile("pending","Waiting"),tile("approved","Active"),tile("closed","Closed")]));
+  root.appendChild(newKeyForm());
   var bar=h("div",{"class":"bar"});
   [["pending","Waiting"],["approved","Active"],["closed","Closed"],["all","All"]].forEach(function(f){
     var p=h("button",{"class":"pill",type:"button","data-l":f[1],onclick:function(){FILTER=f[0];renderList()}},[f[1]]);
@@ -145,6 +161,21 @@ function panel(){
   bar.appendChild(q);root.appendChild(bar);
   els.list=h("div",{id:"list"});root.appendChild(els.list);
   renderList()}
+function newKeyForm(){
+  var plan=h("select",{"aria-label":"Plan"},Object.keys(PLANS).map(function(k){return h("option",{value:k},[PLANS[k][0]+" ($"+PLANS[k][1]+")"])})),
+      who=h("input",{id:"nk-who",placeholder:"Client name or WhatsApp number","aria-label":"Client name or WhatsApp number",maxlength:"60"}),
+      out=h("div",{id:"nk-out"}),go=btn("Create key","ok",function(){
+        var c=who.value.trim();if(c.length<2){toast("Enter a name or number first.");return}
+        go.disabled=true;
+        api("POST",{action:"create",plan:plan.value,contact:c}).then(function(j){
+          go.disabled=false;who.value="";out.innerHTML="";
+          out.appendChild(h("div",{"class":"keyrow",id:"nk-key"},[h("span",{"class":"k"},[pk(j.key)]),
+            btn("Copy","g sm",function(){copyText(pk(j.key))}),
+            digits(c)?h("a",{"class":"btn g sm",href:sendUrl(c,j.key),target:"_blank",rel:"noopener"},["Send on WhatsApp"]):null]));
+          toast("Key created.");return refresh(true)}).catch(function(e){
+          go.disabled=false;if(e.status===401||e.status===429)signOut(errText(e));else toast("That did not go through. Try again.")})});
+  return h("details",{"class":"new",id:"nk"},[h("summary",{},["New access key"]),
+    h("div",{"class":"nf"},[h("div",{style:"color:var(--mu);font-size:.85rem"},["For someone who paid you directly. They enter the key on the site under \"Access using a key\"."]),plan,who,go,out])])}
 function renderList(){
   var c={pending:0,approved:0,closed:0,all:ITEMS.length};
   ITEMS.forEach(function(i){c[grp(i.status)]++});
@@ -159,6 +190,16 @@ function card(i){
   var pl=PLANS[i.plan]||[i.plan,0],st=i.status,acts=[];
   var sel=h("select",{"aria-label":"Plan to grant"},Object.keys(PLANS).map(function(k){
     var o=h("option",{value:k},[PLANS[k][0]+" ($"+PLANS[k][1]+")"]);if(k===i.plan)o.selected=true;return o}));
+  var keyrow=null;
+  if(st==="approved"){
+    var kb=[];
+    if(i.key){
+      kb.push(h("span",{"class":"k"},[pk(i.key)]),h("span",{"class":"d"},["Devices "+(i.deviceCount||0)+"/"+(i.maxDevices||2)]),
+        btn("Copy","g sm",function(){copyText(pk(i.key))}));
+      if(digits(i.contact))kb.push(h("a",{"class":"btn g sm",href:sendUrl(i.contact,i.key),target:"_blank",rel:"noopener"},["Send key"]));
+      kb.push(guarded("Reset key","g sm",function(){act("rekey",i.id)}))}
+    else kb.push(h("span",{"class":"d"},["No access key yet."]),btn("Create key","ok sm",function(){act("rekey",i.id)}));
+    keyrow=h("div",{"class":"keyrow"},kb)}
   if(st==="approved"){acts.push(guarded("Remove access","bad sm",function(){act("revoke",i.id)}))}
   else{
     acts.push(sel);
@@ -172,12 +213,12 @@ function card(i){
   meta.push(h("span",{"class":"mono"},["ID "+String(i.id).slice(0,6)+"..."+String(i.id).slice(-4)]));
   return h("div",{"class":"item"},[
     h("div",{"class":"hd"},[h("div",{"class":"contact"},[i.contact||"No contact"]),h("span",{"class":"chip "+grp(st)},[st==="pending"?"waiting":st])]),
-    h("div",{"class":"meta"},meta),h("div",{"class":"acts"},acts)])}
+    h("div",{"class":"meta"},meta),keyrow,h("div",{"class":"acts"},acts)])}
 
 /* ---------- actions ---------- */
 function act(a,id,plan){
   api("POST",{action:a,id:id,plan:plan}).then(function(){
-    toast({approve:"Approved. The client is unlocked.",reject:"Rejected.",revoke:"Access removed.","delete":"Deleted."}[a]);
+    toast({approve:"Approved. The client is unlocked.",reject:"Rejected.",revoke:"Access removed.",rekey:"New key ready. Devices on the old key are unlinked.","delete":"Deleted."}[a]);
     return refresh(true)}).catch(function(e){
     if(e.status===401||e.status===429)signOut(errText(e));else toast("That did not go through. Try again.")})}
 function refresh(quiet){

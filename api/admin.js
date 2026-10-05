@@ -1,6 +1,8 @@
 "use strict";
-// GET  /api/admin                     -> list every payment request
-// POST /api/admin { action, id, plan } -> approve | reject | revoke | delete
+// GET  /api/admin                          -> list every request and access key
+// POST /api/admin { action, id, plan, contact }
+//        approve | reject | revoke | delete | rekey (new key, unlinks other devices)
+//        create  (a new approved client with an access key, for someone who paid you directly)
 // Every call must carry the owner's secret in the x-admin-key header. The secret lives only
 // in the ADMIN_KEY environment variable on Vercel. After 10 wrong tries an address is locked
 // out for about 15 minutes.
@@ -11,6 +13,14 @@ function sameKey(given, real) {
   const a = crypto.createHash("sha256").update(String(given)).digest();
   const b = crypto.createHash("sha256").update(String(real)).digest();
   return crypto.timingSafeEqual(a, b);
+}
+
+// What the owner's panel sees: the key, but not the clients' device ids.
+function view(rec) {
+  const r = L.effective(rec);
+  const o = Object.assign({}, r, { deviceCount: L.deviceCount(r), maxDevices: L.MAX_DEVICES });
+  delete o.devices;
+  return o;
 }
 
 module.exports = async (req, res) => {
@@ -38,7 +48,7 @@ module.exports = async (req, res) => {
         vals.forEach((v) => {
           if (!v) return;
           try {
-            items.push(L.effective(JSON.parse(v)));
+            items.push(view(JSON.parse(v)));
           } catch (e) {
             /* skip a damaged record */
           }
@@ -49,39 +59,88 @@ module.exports = async (req, res) => {
     }
 
     const b = L.body(req);
+    const now = Date.now();
+
+    if (b.action === "create") {
+      const contact = L.cleanText(b.contact, 60);
+      if (!L.PLANS.includes(b.plan)) return L.send(res, 400, { error: "invalid" });
+      if (contact.length < 2) return L.send(res, 400, { error: "contact" });
+      const id = L.newId();
+      const k = L.newKey();
+      const rec = {
+        id,
+        plan: b.plan,
+        method: "manual",
+        contact,
+        status: "approved",
+        origin: false,
+        devices: [],
+        key: k,
+        createdAt: now,
+        updatedAt: now,
+        approvedAt: now,
+        expiresAt: now + L.YEAR_MS,
+      };
+      await L.redis([
+        ["SET", L.keyOf(id), JSON.stringify(rec)],
+        ["SADD", "dp:ids", id],
+        ["SET", L.keyIdx(k), id],
+      ]);
+      return L.send(res, 200, { ok: true, id, key: k });
+    }
+
     if (!L.ID_RE.test(String(b.id || ""))) return L.send(res, 400, { error: "invalid" });
     const key = L.keyOf(b.id);
+    const [cur] = await L.redis([["GET", key]]);
 
     if (b.action === "delete") {
-      await L.redis([
+      const cmds = [
         ["DEL", key],
         ["SREM", "dp:ids", b.id],
-      ]);
+      ];
+      if (cur) {
+        try {
+          const r = JSON.parse(cur);
+          if (r.key) cmds.push(["DEL", L.keyIdx(r.key)]);
+          (r.devices || []).forEach((d) => cmds.push(["DEL", L.linkOf(d)]));
+        } catch (e) {
+          /* damaged record: still delete it */
+        }
+      }
+      await L.redis(cmds);
       return L.send(res, 200, { ok: true });
     }
 
-    const [cur] = await L.redis([["GET", key]]);
     if (!cur) return L.send(res, 404, { error: "missing" });
     const rec = JSON.parse(cur);
-    const now = Date.now();
+    const extra = [];
 
     if (b.action === "approve") {
       rec.status = "approved";
       rec.plan = L.PLANS.includes(b.plan) ? b.plan : rec.plan;
       rec.approvedAt = now;
       rec.expiresAt = now + L.YEAR_MS;
+      if (!rec.key) rec.key = L.newKey();
+      extra.push(["SET", L.keyIdx(rec.key), rec.id]);
     } else if (b.action === "reject") {
       rec.status = "rejected";
       rec.expiresAt = null;
     } else if (b.action === "revoke") {
       rec.status = "revoked";
       rec.expiresAt = null;
+    } else if (b.action === "rekey") {
+      const fresh = L.newKey();
+      if (rec.key) extra.push(["DEL", L.keyIdx(rec.key)]);
+      (rec.devices || []).forEach((d) => extra.push(["DEL", L.linkOf(d)]));
+      extra.push(["SET", L.keyIdx(fresh), rec.id]);
+      rec.key = fresh;
+      rec.devices = [];
     } else {
       return L.send(res, 400, { error: "action" });
     }
     rec.updatedAt = now;
-    await L.redis([["SET", key, JSON.stringify(rec)]]);
-    return L.send(res, 200, { ok: true, status: rec.status });
+    await L.redis([["SET", key, JSON.stringify(rec)], ...extra]);
+    return L.send(res, 200, { ok: true, status: rec.status, key: rec.key || null });
   } catch (e) {
     return L.send(res, 500, { error: "server" });
   }

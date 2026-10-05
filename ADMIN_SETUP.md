@@ -56,3 +56,17 @@ Open `https://digitpulseai.site/admin` and enter your key. Without the key the p
 | "Too many wrong attempts" | Wait about 15 minutes. |
 | "Could not reach the server" | Check your connection and that the latest deployment finished. |
 | No requests appear after a client paid | Check the database is connected. The client's page shows a note if it could not register, and they can still send the screenshot on WhatsApp. |
+
+## Access keys
+
+Besides approving payments, you can give a client an **access key** (for example `DPAI-K7QM-WX4R-TP9D`).
+
+- **For someone who paid you directly:** in `/admin`, open **New access key**, choose the plan, type their name or WhatsApp number and tap **Create key**. Tap **Send on WhatsApp** to message it to them.
+- **For payments through the site:** when you tap **Approve**, a key is created automatically and shown on the card (Active tab). Clients approved on their own device do not need it; it is there if they change phone.
+- The client opens the site and taps **Access using a key** (home page or login) or **Proceed using a key** (under the waiting-for-approval card).
+- One key works on **2 devices**. A client who clears their browser or changes phone may hit the limit: tap **Reset key** on their card. It creates a new key and unlinks every device. Send them the new one.
+- **Remove access** switches the key off. **Delete** removes the client and the key.
+- Wrong keys are rate limited: 10 wrong tries locks that network out for about 15 minutes.
+- A key unlocks the site without a Deriv login. Keep keys private.
+
+New API file: `api/redeem.js`. No new environment variables are needed.

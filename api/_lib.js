@@ -12,6 +12,11 @@ const METHODS = ["usdt", "mpesa"];
 const ID_RE = /^[a-f0-9]{32}$/;
 const YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 
+// Access keys: 12 characters from an alphabet without 0/O/1/I, so they are easy to read out.
+// A key can unlock the plan on at most MAX_DEVICES devices (the client's own device counts).
+const KEY_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const MAX_DEVICES = 2;
+
 function configured() {
   return !!(STORE_URL && STORE_TOKEN);
 }
@@ -78,6 +83,45 @@ function effective(rec) {
   return rec;
 }
 
+function cleanText(s, max) {
+  return String(s || "")
+    .replace(/[\u0000-\u001f\u007f<>]/g, "")
+    .trim()
+    .slice(0, max);
+}
+
+function newId() {
+  return crypto.randomBytes(16).toString("hex");
+}
+
+function newKey() {
+  const b = crypto.randomBytes(12);
+  let s = "";
+  for (let i = 0; i < 12; i++) s += KEY_CHARS[b[i] & 31]; // 32 characters, so no bias
+  return s;
+}
+
+// Accepts "DPAI-ABCD-EFGH-JKLM", lower case, spaces, no dashes... Returns the 12 characters or null.
+function cleanKey(input) {
+  let s = String(input || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (s.length === 16 && s.indexOf("DPAI") === 0) s = s.slice(4);
+  return /^[A-HJ-NP-Z2-9]{12}$/.test(s) ? s : null;
+}
+
+// Lookup entry: key -> record id. Only a hash of the key is used as the database key.
+function keyIdx(k) {
+  return "dp:key:" + crypto.createHash("sha256").update("dpai-key:" + k).digest("hex");
+}
+
+// Lookup entry: a device that redeemed a key -> the record it unlocks.
+function linkOf(cid) {
+  return "dp:link:" + cid;
+}
+
+function deviceCount(rec) {
+  return (rec.origin ? 1 : 0) + (Array.isArray(rec.devices) ? rec.devices.length : 0);
+}
+
 module.exports = {
   configured,
   redis,
@@ -87,8 +131,16 @@ module.exports = {
   hit,
   keyOf,
   effective,
+  cleanText,
+  newId,
+  newKey,
+  cleanKey,
+  keyIdx,
+  linkOf,
+  deviceCount,
   PLANS,
   METHODS,
   ID_RE,
   YEAR_MS,
+  MAX_DEVICES,
 };

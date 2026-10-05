@@ -35,3 +35,9 @@ Edit the top of the `<script>` in `index.html`:
 ## Notes
 
 Signals describe recent tick patterns only. Digit outcomes are random, and nothing here predicts the next digit or guarantees profit.
+
+## Access keys and languages
+
+- `api/redeem.js` lets a client unlock the site with an owner-issued access key (max 2 devices per key). Keys are created and reset in `/admin`.
+- The plan cards work in two steps: **Choose plan** selects a card and its button becomes **Proceed to payment**.
+- The language button opens a searchable list of about 133 languages. English and Swahili are built in; the others use the Google website translator, loaded only when a client picks one. Right-to-left languages (Arabic, Hebrew, Persian, Urdu and others) flip the page direction.

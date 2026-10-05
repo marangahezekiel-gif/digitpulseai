@@ -11,10 +11,7 @@ module.exports = async (req, res) => {
     if (!L.ID_RE.test(String(b.id || "")) || !L.PLANS.includes(b.plan) || !L.METHODS.includes(b.method)) {
       return L.send(res, 400, { error: "invalid" });
     }
-    const contact = String(b.contact || "")
-      .replace(/[\u0000-\u001f\u007f<>]/g, "")
-      .trim()
-      .slice(0, 60);
+    const contact = L.cleanText(b.contact, 60);
     if (contact.length < 5) return L.send(res, 400, { error: "contact" });
 
     const n = await L.hit("dp:rl:req:" + L.ip(req), 3600);
@@ -30,15 +27,19 @@ module.exports = async (req, res) => {
       return L.send(res, 200, { ok: true, status: "approved", plan: old.plan, expiresAt: old.expiresAt });
     }
 
-    const rec = {
+    // A new request keeps any access key and linked devices the record already had.
+    const rec = Object.assign({}, old || {}, {
       id: b.id,
       plan: b.plan,
       method: b.method,
       contact,
       status: "pending",
+      origin: true,
       createdAt: (old && old.createdAt) || now,
       updatedAt: now,
-    };
+      approvedAt: null,
+      expiresAt: null,
+    });
     await L.redis([
       ["SET", key, JSON.stringify(rec)],
       ["SADD", "dp:ids", b.id],
