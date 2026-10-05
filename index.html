@@ -163,11 +163,14 @@ function T(k){return(S.lang==="sw"&&D[k])?D[k]:k}
 function gtOn(){return !!S.lang&&S.lang!=="en"&&S.lang!=="sw"}
 function setCk(v){var h=location.hostname,val=v?"/en/"+v:"",ex=v?"":";expires=Thu, 01 Jan 1970 00:00:00 GMT";
 try{document.cookie="googtrans="+val+";path=/"+ex;document.cookie="googtrans="+val+";path=/;domain="+h+ex;var q=h.split(".");if(q.length>1)document.cookie="googtrans="+val+";path=/;domain=."+q.slice(-2).join(".")+ex}catch(e){}}
-function toast(m){var t=document.getElementById("toast");if(!t)return;t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(function(){t.hidden=true},5000)}
-function gtFail(unsupported){gtState=3;S.lang="en";save();setCk(null);applyLang();toast(unsupported?"That language is not available for translation. Showing English.":"Translation is unavailable right now. Showing English.")}
+function toast(m){var t=document.getElementById("toast");if(!t)return;t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(function(){t.hidden=true},8000)}
+function gtFail(unsupported){gtState=3;S.lang="en";save();setCk(null);applyLang();toast(unsupported?"Translation could not be loaded for that language. Showing English.":"Translation could not be loaded. Check your connection and try again. Showing English.")}
+function gtDrive(n){var c=document.querySelector("select.goog-te-combo");if(!c){if(n<30)setTimeout(function(){gtDrive(n+1)},200);return}
+var w=S.lang,has=[].some.call(c.options,function(o){return o.value===w});if(!has)return gtFail(true);
+if(c.value!==w){c.value=w;c.dispatchEvent(new Event("change"))}}
 function gtCheck(){if(gtOn()&&!/translated-(ltr|rtl)/.test(document.documentElement.className))gtFail(true)}
 function gtLoad(){if(!gtOn()||gtState)return;gtState=1;setCk(S.lang);
-window.googleTranslateElementInit=function(){try{new google.translate.TranslateElement({pageLanguage:"en",autoDisplay:false},"gt")}catch(e){return gtFail()}gtState=2;setTimeout(gtCheck,15000)};
+window.googleTranslateElementInit=function(){try{new google.translate.TranslateElement({pageLanguage:"en",autoDisplay:false},"gt")}catch(e){return gtFail()}gtState=2;gtDrive(0);setTimeout(gtCheck,15000)};
 var sc=document.createElement("script");sc.src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";sc.async=true;sc.onerror=function(){gtFail()};document.head.appendChild(sc);
 setTimeout(function(){if(gtState===1)gtFail()},15000)}
 function norm(t){return String(t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()}
@@ -183,7 +186,7 @@ document.addEventListener("keydown",function(e){var o=document.getElementById("l
 if(e.key==="Tab"){var f=[].filter.call(o.querySelectorAll("button,input"),function(x){return x.offsetParent!==null});if(!f.length)return;var a=f[0],z=f[f.length-1];
 if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}else if(f.indexOf(document.activeElement)<0){e.preventDefault();a.focus()}}});
 function applyLang(){var L=S.lang||"en",c=document.getElementById("lgc"),h=document.documentElement;if(c)c.textContent=L.split("-")[0].toUpperCase();
-h.lang=HL[L]||L;h.dir=RTL.indexOf(L)>=0?"rtl":"ltr";
+h.lang=gtOn()?"en":(HL[L]||L);h.dir=RTL.indexOf(L)>=0?"rtl":"ltr";
 var lt=document.getElementById("lt"),ls=document.getElementById("ls"),le=document.getElementById("le");if(lt&&!gtOn()){lt.textContent=T("Language");ls.placeholder=L==="sw"?"Tafuta lugha":"Search language";le.textContent=L==="sw"?"Hakuna lugha iliyopatikana.":"No language found."}
 if(L!=="sw")return;
 var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n;while(n=w.nextNode()){if(n.parentNode.tagName==="SCRIPT"||n.parentNode.tagName==="STYLE")continue;var k=n.nodeValue.trim();if(D[k])n.nodeValue=n.nodeValue.replace(k,D[k])}
