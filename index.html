@@ -252,18 +252,22 @@ function setPlan(p){S.plan=p;DS.tab=ACC[p][0];paintTabs();paintOpt();resetSig()}
 function backDash(){go(S.status==="pending"?"wait":"home")}
 function welcome(){if(S.account==="key")return '<div class="card" style="border-color:var(--ac);margin-bottom:14px"><b>Welcome!</b><p style="margin:4px 0 0">Your access key is active.</p></div>';return S.account?'<div class="card" style="border-color:var(--ac);margin-bottom:14px"><b>Welcome!</b><p style="margin:4px 0 0">Proceed with the Deriv account you used to log in.</p></div>':''}
 function killWs(){if(DS.ws){try{DS.ws.onclose=null;DS.ws.onerror=null;DS.ws.close()}catch(e){}DS.ws=null}}
-function sim(){if(!PREVIEW){killWs();clearTimeout(DS.to);clearInterval(DS.sim);DS.q=[];DS.src="Live feed unavailable. Check your connection and select the market again.";feed();paintSig();return}
+function sim(){if(!PREVIEW){killWs();clearTimeout(DS.to);clearInterval(DS.sim);DS.q=[];DS.src="Live feed unavailable"+(DS.why?" ("+DS.why+")":"")+". Check your connection and select the market again.";feed();paintSig();return}
 if(DS.sim&&DS.src.indexOf("Simulated")===0)return;killWs();clearTimeout(DS.to);clearInterval(DS.sim);DS.q=[];DS.pip=mk()[2];var p=1000;for(var i=0;i<100;i++){p+=(Math.random()-.5)*2;DS.q.push(p)}
 DS.src="Simulated data (live feed unavailable here)";feed();paintSig();DS.sim=setInterval(function(){DS.q.push(DS.q[DS.q.length-1]+(Math.random()-.5)*2);if(DS.q.length>120)DS.q.shift();feed()},mk()[3]*1000)}
-function connect(){clearInterval(DS.sim);clearTimeout(DS.to);killWs();DS.q=[];DS.src="Connecting...";var got=false,w;resetSig();feed();
-try{w=new WebSocket("wss://ws.derivws.com/websockets/v3?app_id="+APP_ID)}catch(e){return sim()}
+/* Deriv public market data (no login needed). New endpoint first, the older one as a fallback. */
+var WSU=["wss://api.derivws.com/trading/v1/options/ws/public","wss://ws.derivws.com/websockets/v3?app_id=1089"];
+function connect(i){i=typeof i==="number"?i:0;clearInterval(DS.sim);clearTimeout(DS.to);killWs();DS.q=[];DS.src="Connecting...";if(i===0)DS.why="";var got=false,dead=false,w;if(i===0)resetSig();feed();
+function next(why){if(dead||got)return;dead=true;clearTimeout(DS.to);DS.why=why||DS.why;if(i+1<WSU.length)return connect(i+1);sim()}
+try{w=new WebSocket(WSU[i])}catch(e){return next("blocked")}
 DS.ws=w;
 w.onopen=function(){w.send(JSON.stringify({ticks_history:DS.mk,adjust_start_time:1,count:100,end:"latest",style:"ticks",subscribe:1}))};
-w.onmessage=function(m){var d;try{d=JSON.parse(m.data)}catch(e){return}if(d.error)return sim();
-if(d.msg_type==="history"){got=true;DS.q=d.history.prices.map(Number);DS.pip=d.pip_size||mk()[2];DS.src="Live \u00B7 Deriv";feed();paintSig()}
-else if(d.msg_type==="tick"){DS.q.push(+d.tick.quote);if(DS.q.length>120)DS.q.shift();DS.pip=d.tick.pip_size||DS.pip;feed()}};
-w.onerror=function(){if(!got)sim()};
-DS.to=setTimeout(function(){if(!got)sim()},3500)}
+w.onmessage=function(m){var d;try{d=JSON.parse(m.data)}catch(e){return}if(d.error)return next(d.error.code||"error");
+if(d.msg_type==="history"&&d.history&&d.history.prices){got=true;clearTimeout(DS.to);DS.q=d.history.prices.map(Number);DS.pip=d.pip_size||mk()[2];DS.src="Live \u00B7 Deriv";feed();paintSig()}
+else if(d.msg_type==="tick"&&d.tick){DS.q.push(+d.tick.quote);if(DS.q.length>120)DS.q.shift();DS.pip=d.tick.pip_size||DS.pip;feed()}};
+w.onerror=function(){if(!got)next("connection")};
+w.onclose=function(){if(!got)return next("closed");if(S.view==="dash")setTimeout(function(){if(S.view==="dash"&&DS.ws===w)connect(i)},2000)};
+DS.to=setTimeout(function(){next("timeout")},6000)}
 function stopDash(){clearInterval(DS.iv);clearInterval(DS.sim);clearInterval(DS.scT);clearTimeout(DS.to);killWs()}
 function startDash(){var A=ACC[S.plan||"matches"];if(!DS.tab||A.indexOf(DS.tab)<0)DS.tab=A[0];paintTabs();paintOpt();clearInterval(DS.iv);DS.iv=setInterval(loop,250);connect()}
 function mopt(m){return '<option value="'+m[0]+'"'+(DS.mk===m[0]?' selected':'')+'>'+m[1]+'</option>'}
