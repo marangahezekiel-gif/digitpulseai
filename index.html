@@ -88,8 +88,7 @@ details{border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin:8
 .li{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:start;background:none;border:0;border-bottom:1px solid var(--bd);color:var(--tx);padding:12px 6px;font:inherit;cursor:pointer}
 .li small{color:var(--mu)}.li.on{color:var(--ac);font-weight:700}.li:hover,.li:focus-visible{background:color-mix(in srgb,var(--ac2) 18%,transparent);outline:0}
 .nr{display:flex;gap:8px;align-items:center}
-#cur{width:auto;margin:0;padding:4px 8px;border-radius:99px;font-size:.8rem;background:none;color:var(--tx);border:1px solid var(--bd);cursor:pointer}
-#cur[hidden]{display:none}#cur option{background:var(--card);color:var(--tx)}
+#cur[hidden]{display:none}
 .fx:empty{display:none}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 14px;max-width:90vw;font-size:.85rem;box-shadow:0 8px 24px rgba(0,0,0,.35)}
 #toast[hidden]{display:none}
@@ -98,11 +97,12 @@ body{top:0!important;position:static!important}.goog-te-banner-frame,.skiptransl
 </head>
 <body>
 <div class="w">
-<nav><div class="logo" translate="no">Digitpulse<b>Ai</b></div><div class="nr"><select id="cur" hidden aria-label="Currency" translate="no" onchange="setCur(this.value)"></select><button class="pill" id="lg" onclick="openLang()" aria-haspopup="dialog" aria-label="Language" style="cursor:pointer;background:none;color:var(--tx)">&#127760; <span id="lgc" translate="no">EN</span></button></div></nav>
+<nav><div class="logo" translate="no">Digitpulse<b>Ai</b></div><div class="nr"><button class="pill" id="cur" hidden aria-haspopup="dialog" aria-label="Currency" translate="no" onclick="openCur()" style="cursor:pointer;background:none;color:var(--tx)">USD</button><button class="pill" id="lg" onclick="openLang()" aria-haspopup="dialog" aria-label="Language" style="cursor:pointer;background:none;color:var(--tx)">&#127760; <span id="lgc" translate="no">EN</span></button></div></nav>
 <main id="app"></main>
 </div>
 <a class="wa" href="https://wa.me/254741092009" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">&#128172; Chat with us</a>
 <div class="ov" id="lov" hidden role="dialog" aria-modal="true" aria-labelledby="lt" onclick="if(event.target===this)closeLang()"><div class="sheet"><div class="sh"><b id="lt">Language</b><button class="x" onclick="closeLang()" aria-label="Close">&times;</button></div><input id="ls" type="search" placeholder="Search language" aria-label="Search language" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="lfill(this.value)"><div id="ll" translate="no" class="notranslate"></div><p id="le" class="note" hidden>No language found.</p></div></div>
+<div class="ov" id="cov" hidden role="dialog" aria-modal="true" aria-labelledby="cti" onclick="if(event.target===this)closeCur()"><div class="sheet"><div class="sh"><b id="cti">Currency</b><button class="x" onclick="closeCur()" aria-label="Close">&times;</button></div><input id="cs" type="search" placeholder="Search currency or country" aria-label="Search currency or country" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="cfill(this.value)"><div id="cl" translate="no" class="notranslate"></div><p id="ce" class="note" hidden>No currency found.</p></div></div>
 <div id="toast" role="status" hidden></div>
 <div id="gt" translate="no" style="position:fixed;left:0;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none"></div>
 <script>
@@ -114,7 +114,7 @@ var PLANS=[
 {id:"ou",name:"Over / Under",price:80,f:["Over/Under analysis","Digit stats and trends","Full year access"]}];
 var S={view:"home",account:null,plan:null,method:"usdt",status:null};
 function load(){try{var d=JSON.parse(localStorage.getItem("dpai")||"{}");for(var k in d)S[k]=d[k]}catch(e){}}
-function save(){try{localStorage.setItem("dpai",JSON.stringify({account:S.account,plan:S.plan,status:S.status,lang:S.lang,cid:S.cid,contact:S.contact,reg:S.reg,cur:S.cur}))}catch(e){}}
+function save(){try{localStorage.setItem("dpai",JSON.stringify({account:S.account,plan:S.plan,status:S.status,lang:S.lang,cid:S.cid,contact:S.contact,reg:S.reg,cur:S.cur,accts:S.accts,kmask:S.kmask}))}catch(e){}}
 function plan(){return PLANS.filter(function(p){return p.id===S.plan})[0]}
 function go(v){S.view=v;render();window.scrollTo(0,0)}
 function copy(t,b){var ok=function(){var o=b.textContent;b.textContent="Copied!";setTimeout(function(){b.textContent=o},1400)};
@@ -123,9 +123,9 @@ function fb(){var a=document.createElement("textarea");a.value=t;document.body.a
 var SCOPE="trade"; /* Deriv OAuth scope; change here if your app uses a different one */
 function b64u(buf){return btoa(String.fromCharCode.apply(null,new Uint8Array(buf))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
 function parseOAuth(){var q=new URLSearchParams(location.search),c=q.get("code"),e=q.get("error");if(!c&&!e)return;var ok=false;
-try{ok=!!q.get("state")&&q.get("state")===sessionStorage.getItem("oauth_state");sessionStorage.removeItem("oauth_state");sessionStorage.removeItem("pkce_v")}catch(x){}
+var vf="";try{vf=sessionStorage.getItem("pkce_v")||"";ok=!!q.get("state")&&q.get("state")===sessionStorage.getItem("oauth_state");sessionStorage.removeItem("oauth_state");sessionStorage.removeItem("pkce_v")}catch(x){}
 try{history.replaceState(null,"",location.pathname)}catch(x){}
-if(c&&ok){S.account="deriv";S.err=null;S.view="plans";save()}else{S.err=e?"Deriv login was cancelled or failed. Please try again.":"We could not verify the Deriv login. Please start again from this site.";S.view="login"}}
+if(c&&ok){S.account="deriv";S.accts=null;S.err=null;S.view="plans";save();if(vf)exch(c,vf)}else{S.err=e?"Deriv login was cancelled or failed. Please try again.":"We could not verify the Deriv login. Please start again from this site.";S.view="login"}}
 function derivLogin(){var cs="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~",v=Array.prototype.map.call(crypto.getRandomValues(new Uint8Array(64)),function(x){return cs[x%66]}).join(""),st=Array.prototype.map.call(crypto.getRandomValues(new Uint8Array(16)),function(x){return("0"+x.toString(16)).slice(-2)}).join("");
 try{sessionStorage.setItem("pkce_v",v);sessionStorage.setItem("oauth_state",st)}catch(e){S.err="Your browser is blocking storage. Enable it and try again.";return render()}
 crypto.subtle.digest("SHA-256",new TextEncoder().encode(v)).then(function(h){location.href="https://auth.deriv.com/oauth2/auth?response_type=code&client_id="+encodeURIComponent(APP_ID)+"&redirect_uri="+encodeURIComponent(SITE)+"&scope="+encodeURIComponent(SCOPE)+"&state="+st+"&code_challenge="+b64u(h)+"&code_challenge_method=S256"})}
@@ -186,7 +186,7 @@ function closeLang(){var o=document.getElementById("lov");if(o.hidden)return;o.h
 function pickLang(c){var prev=S.lang||"en",wasG=prev!=="en"&&prev!=="sw",isG=c!=="en"&&c!=="sw";closeLang();if(c===prev)return;S.lang=c;save();
 if(isG||wasG){setCk(isG?c:null);try{sessionStorage.setItem("dpai_rv",S.view)}catch(e){}location.reload();return}
 render()}
-document.addEventListener("keydown",function(e){var o=document.getElementById("lov");if(!o||o.hidden)return;if(e.key==="Escape"){closeLang();return}
+document.addEventListener("keydown",function(e){var o=document.getElementById("lov");if(!o||o.hidden)o=document.getElementById("cov");if(!o||o.hidden)return;if(e.key==="Escape"){closeLang();closeCur();return}
 if(e.key==="Tab"){var f=[].filter.call(o.querySelectorAll("button,input"),function(x){return x.offsetParent!==null});if(!f.length)return;var a=f[0],z=f[f.length-1];
 if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}else if(f.indexOf(document.activeElement)<0){e.preventDefault();a.focus()}}});
 function applyLang(){var L=S.lang||"en",c=document.getElementById("lgc"),h=document.documentElement;if(c)c.textContent=L.split("-")[0].toUpperCase();
@@ -254,7 +254,11 @@ function setB(i){DS.ou.b=i;paintOpt();resetSig()}
 function setMk(m){DS.mk=m;connect()}
 function setPlan(p){S.plan=p;DS.tab=ACC[p][0];paintTabs();paintOpt();resetSig()}
 function backDash(){go(S.status==="pending"?"wait":"home")}
-function welcome(){if(S.account==="key")return '<div class="card" style="border-color:var(--ac);margin-bottom:14px"><b>Welcome!</b><p style="margin:4px 0 0">Your access key is active.</p></div>';return S.account?'<div class="card" style="border-color:var(--ac);margin-bottom:14px"><b>Welcome!</b><p style="margin:4px 0 0">Proceed with the Deriv account you used to log in.</p></div>':''}
+function acctHTML(){var A=S.accts;if(!Array.isArray(A)||!A.length)return "";return A.map(function(a){return '<b translate="no">'+esc(a.id)+'</b> ('+(a.type==="demo"?"demo":"real")+')'}).join(", ")}
+function welcomeInner(){if(S.account==="key")return '<b>Welcome!</b><p style="margin:4px 0 0">'+(S.kmask?'Access key <b translate="no">'+esc(S.kmask)+'</b> is active.':'Your access key is active.')+'</p>';
+var a=acctHTML();return '<b>Welcome!</b><p style="margin:4px 0 0">'+(a?'Proceed with your Deriv account '+a+'.':'Proceed with the Deriv account you used to log in.')+'</p>'}
+function welcome(){return S.account?'<div class="card" id="wlc" style="border-color:var(--ac);margin-bottom:14px">'+welcomeInner()+'</div>':''}
+function exch(code,v){jfetch("/api/deriv",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:code,verifier:v})}).then(function(x){if(!x.ok||!x.j.accounts||!x.j.accounts.length)return;S.accts=x.j.accounts.slice(0,6);save();var e=document.getElementById("wlc");if(e&&S.account==="deriv")e.innerHTML=welcomeInner()}).catch(function(){})}
 function killWs(){if(DS.ws){try{DS.ws.onclose=null;DS.ws.onerror=null;DS.ws.close()}catch(e){}DS.ws=null}}
 function sim(){if(!PREVIEW){killWs();clearTimeout(DS.to);clearInterval(DS.sim);DS.q=[];DS.src="Live feed unavailable"+(DS.why?" ("+DS.why+")":"")+". Check your connection and select the market again.";feed();paintSig();return}
 if(DS.sim&&DS.src.indexOf("Simulated")===0)return;killWs();clearTimeout(DS.to);clearInterval(DS.sim);DS.q=[];DS.pip=mk()[2];var p=1000;for(var i=0;i<100;i++){p+=(Math.random()-.5)*2;DS.q.push(p)}
@@ -282,13 +286,14 @@ function keyLnk(f,t,al){return '<p style="margin:10px 0 0;text-align:'+al+'"><a 
 function openKey(f){S.keyBack=f;go("key")}
 V.key=function(){var b=S.keyBack==="wait"&&waitish()?"wait":(S.keyBack==="login"&&!S.account?"login":"home");return '<div class="card" style="max-width:440px;margin:0 auto"><div style="margin-bottom:14px"><button class="btn g" onclick="go(\''+b+'\')">&larr; Back</button></div><h2>Access using a key</h2><p>Enter the access key we sent you. One key works on up to 2 devices.</p><label for="kk" style="font-weight:700;display:block">Access key</label><input id="kk" dir="ltr" translate="no" class="notranslate" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="DPAI-XXXX-XXXX-XXXX" maxlength="24" style="letter-spacing:1px" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key===\'Enter\')redeemKey()"><p class="note" id="kn" role="alert" style="min-height:1.2em"></p><button class="btn" id="kb" style="width:100%" onclick="redeemKey()">Unlock access</button><p class="note" style="color:var(--mu)">No key yet? Choose a plan and pay, or message us on WhatsApp.</p></div>'};
 var KEYERR={short:"Enter the full key, for example DPAI-XXXX-XXXX-XXXX.",invalid:"That key does not look right. Check it and try again.",notfound:"That key was not found. Check it and try again.",inactive:"This key is no longer active. Please contact us on WhatsApp.",devices:"This key is already used on 2 devices. Contact us on WhatsApp to reset it.",locked:"Too many wrong tries. Please wait about 15 minutes.",not_configured:"Key access is not available right now. Please try again later.",net:"Could not reach the server. Check your connection and try again."};
-function keyOk(j){S.status="approved";S.plan=j.plan||S.plan||"matches";S.account=S.account||"key";S.reg=true;S.regErr=null;S.err=null;save();go("dash")}
+function keyOk(j,core){if(core)S.kmask="DPAI-"+core.slice(0,4)+"-"+core.slice(4,6)+"\u2022\u2022-\u2022\u2022\u2022\u2022";S.status="approved";S.plan=j.plan||S.plan||"matches";S.account=S.account||"key";S.reg=true;S.regErr=null;S.err=null;save();go("dash")}
 function redeemKey(){var e=document.getElementById("kk"),n=document.getElementById("kn"),b=document.getElementById("kb");if(!e||b.disabled)return;var v=e.value.trim(),c=v.replace(/[^A-Za-z0-9]/g,"").toUpperCase();
 function say(m){n.textContent=m;n.style.color="#ef4444";b.disabled=false;b.textContent=T("Unlock access")}
 if(c.length<12)return say(KEYERR.short);
-if(PREVIEW&&c==="DPAIDEMOKEY1TEST")return keyOk({plan:"matches"});
+var core=(c.length===16&&c.indexOf("DPAI")===0)?c.slice(4):c;
+if(PREVIEW&&c==="DPAIDEMOKEY1TEST")return keyOk({plan:"matches"},core);
 b.disabled=true;b.textContent="Checking...";n.textContent="";
-jfetch("/api/redeem",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:S.cid,key:v})}).then(function(x){if(x.ok&&x.j.status==="approved")return keyOk(x.j);say(KEYERR[x.j.error]||KEYERR.net)}).catch(function(){say(KEYERR.net)})}
+jfetch("/api/redeem",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:S.cid,key:v})}).then(function(x){if(x.ok&&x.j.status==="approved")return keyOk(x.j,core);say(KEYERR[x.j.error]||KEYERR.net)}).catch(function(){say(KEYERR.net)})}
 function pickPlan(id){if(S.status==="approved"||S.picked===id)return choosePlan(id);S.picked=id;
 document.querySelectorAll(".plan").forEach(function(c){var on=c.getAttribute("data-id")===id,b=c.querySelector("button");c.classList.toggle("sel",on);b.textContent=T(on?"Proceed to payment":"Choose plan");b.setAttribute("aria-pressed",on)})}
 /* ---- Currency: prices shown in the visitor's currency from daily public exchange rates ---- */
@@ -306,10 +311,18 @@ fetch("https://latest.currency-api.pages.dev/v1/currencies/usd.json",{cache:"no-
 for(k in j.usd){C=k.toUpperCase();if(/^[A-Z]{3}$/.test(C)&&typeof j.usd[k]==="number"&&j.usd[k]>0&&(!sup||sup.indexOf(C)>=0))r[C]=j.usd[k]}
 if(!(r.KES>0))throw 0;ok(r,"ca",j.date)}).catch(function(){
 return fetch("https://open.er-api.com/v6/latest/USD").then(function(x){if(!x.ok)throw 0;return x.json()}).then(function(j){if(j.result!=="success"||!(j.rates&&j.rates.KES>0))throw 0;ok(j.rates,"er",new Date((j.time_last_update_unix||0)*1000).toISOString().slice(0,10))})}).catch(function(){if(++fxTry<=5)setTimeout(function(){fxFetch(true)},60000)})}
-function fxFill(){var s=document.getElementById("cur"),r=fxRates();if(!s)return;if(!r){s.hidden=true;return}
-var P=["USD","KES","UGX","TZS","RWF","NGN","GHS","ZAR","ETB","EUR","GBP","INR","AED","CAD","AUD"].filter(function(x){return r[x]}),all=Object.keys(r).sort().filter(function(x){return P.indexOf(x)<0});
-s.innerHTML=P.concat(all).map(function(c){return '<option value="'+c+'">'+c+'</option>'}).join("");s.value=curNow();s.hidden=false}
-function setCur(c){S.cur=c;save();fxPaint()}
+var CN={};"AED:United Arab Emirates;AFN:Afghanistan;ALL:Albania;AMD:Armenia;ANG:Curaçao & Sint Maarten;AOA:Angola;ARS:Argentina;AUD:Australia;AWG:Aruba;AZN:Azerbaijan;BAM:Bosnia and Herzegovina;BBD:Barbados;BDT:Bangladesh;BGN:Bulgaria;BHD:Bahrain;BIF:Burundi;BMD:Bermuda;BND:Brunei;BOB:Bolivia;BRL:Brazil;BSD:Bahamas;BTN:Bhutan;BWP:Botswana;BYN:Belarus;BZD:Belize;CAD:Canada;CDF:DR Congo;CHF:Switzerland;CLP:Chile;CNY:China;COP:Colombia;CRC:Costa Rica;CUP:Cuba;CVE:Cape Verde;CZK:Czechia;DJF:Djibouti;DKK:Denmark;DOP:Dominican Republic;DZD:Algeria;EGP:Egypt;ERN:Eritrea;ETB:Ethiopia;EUR:Eurozone;FJD:Fiji;FKP:Falkland Islands;GBP:United Kingdom;GEL:Georgia;GHS:Ghana;GIP:Gibraltar;GMD:Gambia;GNF:Guinea;GTQ:Guatemala;GYD:Guyana;HKD:Hong Kong;HNL:Honduras;HTG:Haiti;HUF:Hungary;IDR:Indonesia;ILS:Israel;INR:India;IQD:Iraq;IRR:Iran;ISK:Iceland;JMD:Jamaica;JOD:Jordan;JPY:Japan;KES:Kenya;KGS:Kyrgyzstan;KHR:Cambodia;KMF:Comoros;KPW:North Korea;KRW:South Korea;KWD:Kuwait;KYD:Cayman Islands;KZT:Kazakhstan;LAK:Laos;LBP:Lebanon;LKR:Sri Lanka;LRD:Liberia;LSL:Lesotho;LYD:Libya;MAD:Morocco;MDL:Moldova;MGA:Madagascar;MKD:North Macedonia;MMK:Myanmar;MNT:Mongolia;MOP:Macao;MRU:Mauritania;MUR:Mauritius;MVR:Maldives;MWK:Malawi;MXN:Mexico;MYR:Malaysia;MZN:Mozambique;NAD:Namibia;NGN:Nigeria;NIO:Nicaragua;NOK:Norway;NPR:Nepal;NZD:New Zealand;OMR:Oman;PAB:Panama;PEN:Peru;PGK:Papua New Guinea;PHP:Philippines;PKR:Pakistan;PLN:Poland;PYG:Paraguay;QAR:Qatar;RON:Romania;RSD:Serbia;RUB:Russia;RWF:Rwanda;SAR:Saudi Arabia;SBD:Solomon Islands;SCR:Seychelles;SDG:Sudan;SEK:Sweden;SGD:Singapore;SHP:Saint Helena;SLE:Sierra Leone;SLL:Sierra Leone;SOS:Somalia;SRD:Suriname;SSP:South Sudan;STN:São Tomé and Príncipe;SYP:Syria;SZL:Eswatini;THB:Thailand;TJS:Tajikistan;TMT:Turkmenistan;TND:Tunisia;TOP:Tonga;TRY:Türkiye;TTD:Trinidad and Tobago;TWD:Taiwan;TZS:Tanzania;UAH:Ukraine;UGX:Uganda;USD:United States;UYU:Uruguay;UZS:Uzbekistan;VES:Venezuela;VND:Vietnam;VUV:Vanuatu;WST:Samoa;XAF:Central Africa;XCD:Eastern Caribbean;XOF:West Africa;XPF:French Pacific;YER:Yemen;ZAR:South Africa;ZMW:Zambia;ZWG:Zimbabwe;ZWL:Zimbabwe".split(";").forEach(function(x){var a=x.split(":");CN[a[0]]=a[1]});
+var CPIN=["USD","KES","UGX","TZS","RWF","NGN","GHS","ZAR","ETB","EUR","GBP","INR","AED","CAD","AUD"],DNm=null;
+function cname(c){try{DNm=DNm||new Intl.DisplayNames(["en"],{type:"currency"});return DNm.of(c)||c}catch(e){return c}}
+function fxFill(){var b=document.getElementById("cur"),r=fxRates();if(!b)return;if(!r){b.hidden=true;return}b.textContent=curNow();b.hidden=false}
+function cfill(q){var r=fxRates(),n=norm(q).trim(),cur=curNow();if(!r)return;
+var P=CPIN.filter(function(x){return r[x]}),all=Object.keys(r).sort().filter(function(x){return P.indexOf(x)<0}),L=P.concat(all).filter(function(c){return !n||norm(c).indexOf(n)>=0||norm(cname(c)).indexOf(n)>=0||norm(CN[c]||"").indexOf(n)>=0});
+if(n)L.sort(function(a,b){return(norm(a).indexOf(n)===0?0:1)-(norm(b).indexOf(n)===0?0:1)});
+document.getElementById("cl").innerHTML=L.map(function(c){return '<button class="li'+(c===cur?' on':'')+'"'+(c===cur?' aria-current="true"':'')+' onclick="pickCur(\''+c+'\')"><span>'+c+(CN[c]?' ('+esc(CN[c])+')':'')+'</span><small>'+esc(cname(c))+(c===cur?' &#10003;':'')+'</small></button>'}).join("");
+document.getElementById("ce").hidden=L.length>0}
+function openCur(){if(!fxRates())return;var o=document.getElementById("cov");lastF=document.activeElement;o.hidden=false;document.body.style.overflow="hidden";var i=document.getElementById("cs");i.value="";cfill("");i.focus()}
+function closeCur(){var o=document.getElementById("cov");if(!o||o.hidden)return;o.hidden=true;document.body.style.overflow="";if(lastF&&lastF.focus)lastF.focus()}
+function pickCur(c){closeCur();S.cur=c;save();fxPaint()}
 function fmtC(v,c){var d=v>=100?0:2;try{return new Intl.NumberFormat("en",{style:"currency",currency:c,maximumFractionDigits:d,minimumFractionDigits:d}).format(v)}catch(e){return c+" "+v.toFixed(d)}}
 function kesNote(){var r=fxRates(),p=plan();return r&&p?" (KES "+Math.ceil(p.price*r.KES)+")":""}
 function fxPaint(){var r=fxRates(),c=curNow();
@@ -317,7 +330,7 @@ document.querySelectorAll(".fx").forEach(function(e){var u=+e.getAttribute("data
 if(e.getAttribute("data-mode")==="kes")e.textContent=r?"KES "+new Intl.NumberFormat("en",{maximumFractionDigits:0}).format(Math.ceil(u*r.KES)):e.getAttribute("data-fb");
 else e.textContent=(r&&c!=="USD")?"\u2248 "+fmtC(u*r[c],c):""});
 var n=document.getElementById("fxn");if(n)n.innerHTML=r?"Live rate: 1 USD = "+r.KES.toFixed(2)+" KES"+(FX.d?" (as of "+FX.d+")":"")+". Rates update daily, so your M-Pesa total may differ slightly. "+(FX.src==="er"?'<a href="https://www.exchangerate-api.com" target="_blank" rel="noopener" style="color:inherit">Rates By Exchange Rate API</a>':'<a href="https://github.com/fawazahmed0/exchange-api" target="_blank" rel="noopener" style="color:inherit">Rates: exchange-api</a>'):"";
-var s=document.getElementById("cur");if(s&&!s.hidden)s.value=c}
+var b=document.getElementById("cur");if(b&&!b.hidden)b.textContent=c}
 function esc(t){return String(t).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function ensureCid(){if(!/^[a-f0-9]{32}$/.test(S.cid||"")){S.cid=Array.prototype.map.call(crypto.getRandomValues(new Uint8Array(16)),function(x){return("0"+x.toString(16)).slice(-2)}).join("");save()}}
 function jfetch(url,opts){return fetch(url,opts).then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j}})})}
