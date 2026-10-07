@@ -256,7 +256,7 @@ function setPlan(p){S.plan=p;DS.tab=ACC[p][0];paintTabs();paintOpt();resetSig()}
 function backDash(){go(S.status==="pending"?"wait":"home")}
 function acctHTML(){var A=S.accts;if(!Array.isArray(A)||!A.length)return "";return A.map(function(a){return '<b translate="no">'+esc(a.id)+'</b> ('+(a.type==="demo"?"demo":"real")+')'}).join(", ")}
 function welcomeInner(){if(S.account==="key")return '<b>Welcome!</b><p style="margin:4px 0 0">'+(S.kmask?'Access key <b translate="no">'+esc(S.kmask)+'</b> is active.':'Your access key is active.')+'</p>';
-var a=acctHTML();return '<b>Welcome!</b><p style="margin:4px 0 0">'+(a?'Proceed with your Deriv account '+a+'.':'Proceed with the Deriv account you used to log in.')+'</p>'}
+var a=acctHTML();return '<b>Welcome!</b>'+(a?'<p style="margin:4px 0 0">Account '+a+'</p>':'')}
 function welcome(){return S.account?'<div class="card" id="wlc" style="border-color:var(--ac);margin-bottom:14px">'+welcomeInner()+'</div>':''}
 function exch(code,v){jfetch("/api/deriv",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:code,verifier:v})}).then(function(x){if(!x.ok||!x.j.accounts||!x.j.accounts.length)return;S.accts=x.j.accounts.slice(0,6);save();var e=document.getElementById("wlc");if(e&&S.account==="deriv")e.innerHTML=welcomeInner()}).catch(function(){})}
 function killWs(){if(DS.ws){try{DS.ws.onclose=null;DS.ws.onerror=null;DS.ws.close()}catch(e){}DS.ws=null}}
