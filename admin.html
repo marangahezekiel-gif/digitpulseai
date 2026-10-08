@@ -210,6 +210,8 @@ function card(i){
   acts.push(guarded("Delete","g sm",function(){act("delete",i.id)}));
   var meta=[h("span",{},[pl[0]+" ($"+pl[1]+")"]),h("span",{},[METH[i.method]||String(i.method)]),h("span",{title:new Date(i.createdAt).toLocaleString()},[when(i.createdAt)])];
   if(st==="approved"&&i.expiresAt)meta.push(h("span",{},["Active until "+day(i.expiresAt)+" ("+Math.max(0,Math.ceil((i.expiresAt-Date.now())/864e5))+" days left)"]));
+  if(i.receipt)meta.push(h("span",{},["Paid automatically \u00B7 M-Pesa receipt "+i.receipt+(i.paidKes?" (KES "+i.paidKes+")":"")]));
+  else if(i.stk&&st==="pending")meta.push(h("span",{},["M-Pesa prompt sent \u00B7 waiting for the client to enter their PIN"]));
   meta.push(h("span",{"class":"mono"},["ID "+String(i.id).slice(0,6)+"..."+String(i.id).slice(-4)]));
   return h("div",{"class":"item"},[
     h("div",{"class":"hd"},[h("div",{"class":"contact"},[i.contact||"No contact"]),h("span",{"class":"chip "+grp(st)},[st==="pending"?"waiting":st])]),

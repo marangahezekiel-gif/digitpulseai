@@ -41,3 +41,7 @@ Signals describe recent tick patterns only. Digit outcomes are random, and nothi
 - `api/redeem.js` lets a client unlock the site with an owner-issued access key (max 2 devices per key). Keys are created and reset in `/admin`.
 - The plan cards work in two steps: **Choose plan** selects a card and its button becomes **Proceed to payment**.
 - The language button opens a searchable list of about 133 languages. English and Swahili are built in; the others use the Google website translator, loaded only when a client picks one. Right-to-left languages (Arabic, Hebrew, Persian, Urdu and others) flip the page direction.
+
+## M-Pesa prompt and install as app
+
+`api/mpesa.js` sends an M-Pesa prompt, `api/mpesa-callback.js` receives Safaricom's answer and approves the plan after re-checking it with Safaricom. It needs Daraja credentials in environment variables (see ADMIN_SETUP.md) and is off without them. `manifest.webmanifest`, `sw.js` and the `icon*` files make the site installable.

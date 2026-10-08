@@ -70,3 +70,26 @@ Besides approving payments, you can give a client an **access key** (for example
 - A key unlocks the site without a Deriv login. Keep keys private.
 
 New API file: `api/redeem.js`. No new environment variables are needed.
+
+## Automatic M-Pesa payments (optional)
+
+The site can send the client an M-Pesa prompt (STK push) on their phone. When they enter their PIN, Safaricom tells the site, the payment is checked again with Safaricom, and the plan is approved automatically with an access key. You see the M-Pesa receipt on the client's card.
+
+It stays **off** until you set it up. A personal number such as 0741080064 cannot receive prompts: you need a **Safaricom business till or paybill** and a Daraja app.
+
+1. Register at developer.safaricom.co.ke, create an app with **Lipa na M-Pesa**, and ask Safaricom to take it live (Go Live) with your till or paybill. Safaricom gives you the Consumer Key, Consumer Secret, Shortcode and Passkey.
+2. In Vercel, Settings, Environment Variables, add:
+   - `MPESA_CONSUMER_KEY` and `MPESA_CONSUMER_SECRET`
+   - `MPESA_SHORTCODE` (your till or paybill) and `MPESA_PASSKEY`
+   - `MPESA_TXN_TYPE`: `CustomerBuyGoodsOnline` for a till (default) or `CustomerPayBillOnline` for a paybill
+   - `MPESA_PARTYB`: only if Safaricom gave you a separate till number for a store/head-office shortcode
+   - `MPESA_CALLBACK_SECRET`: any long random text (it becomes part of the address Safaricom calls back)
+   - `MPESA_ENV`: `sandbox` while testing, leave empty when live
+   - `MPESA_KES_RATE`: optional fixed dollar-to-shilling rate; otherwise a daily public rate is used
+3. Redeploy. Open the payment page, choose M-Pesa: the "Pay with an M-Pesa prompt" box appears. If a variable is missing, the box stays hidden and the WhatsApp screenshot flow works as before.
+
+Test with `MPESA_ENV=sandbox` first. The amount is always worked out on the server from the plan price, and a payment of a lower amount is never approved.
+
+## Install as an app
+
+The site is installable: Chrome and Edge on Android and desktop show an "Install app" button at the top; on iPhone, tap Share in Safari, then "Add to Home Screen". It gets its own icon and opens full screen. Only the site's own page and icons are saved for offline opening; payments, keys and login always use the network.
