@@ -113,9 +113,12 @@ function sample(){var n=Date.now();return[
   {id:"c3d4e5f60718293a4b5c6d7e8f90a1b2",plan:"ou",method:"mpesa",contact:"0700 000 003",status:"approved",createdAt:n-20*864e5,approvedAt:n-20*864e5,expiresAt:n+345*864e5,key:"K7QMWX4RTP9D",deviceCount:1,maxDevices:2},
   {id:"d4e5f60718293a4b5c6d7e8f90a1b2c3",plan:"matches",method:"usdt",contact:"0700 000 004",status:"rejected",createdAt:n-3*864e5},
   {id:"e5f60718293a4b5c6d7e8f90a1b2c3d4",plan:"ou",method:"mpesa",contact:"0700 000 005",status:"expired",createdAt:n-400*864e5,expiresAt:n-35*864e5}]}
+var DEMO_PROMO=null;
 function demoApi(method,b){
   return new Promise(function(res,rej){setTimeout(function(){
-    if(method==="GET")return res({items:JSON.parse(JSON.stringify(DEMO_ITEMS))});
+    if(method==="GET")return res({items:JSON.parse(JSON.stringify(DEMO_ITEMS)),promo:DEMO_PROMO,now:Date.now()});
+    if(b.action==="promo_start"){DEMO_PROMO={plan:"matches",price:80,endsAt:Date.now()+8*36e5};return res({ok:true,promo:DEMO_PROMO,now:Date.now()})}
+    if(b.action==="promo_stop"){DEMO_PROMO=null;return res({ok:true,promo:null,now:Date.now()})}
     var i=DEMO_ITEMS.filter(function(x){return x.id===b.id})[0],now=Date.now();
     if(b.action==="create"){var nk=fakeKey(),nn=Date.now();DEMO_ITEMS.unshift({id:("f"+nn.toString(16)+"0000000000000000000000000").slice(0,32),plan:b.plan,method:"manual",contact:b.contact,status:"approved",createdAt:nn,approvedAt:nn,expiresAt:nn+365*864e5,key:nk,deviceCount:0,maxDevices:2});return res({ok:true,key:nk})}
     if(b.action==="delete"){DEMO_ITEMS=DEMO_ITEMS.filter(function(x){return x.id!==b.id});return res({ok:true})}
@@ -151,6 +154,7 @@ function panel(){
     h("div",{"class":"acts"},[btn("Refresh","g sm",function(){refresh(false)}),btn("Sign out","g sm",function(){signOut()})])]));
   if(DEMO)root.appendChild(h("div",{"class":"banner"},["Demo data. Nothing here is saved."]));
   root.appendChild(h("div",{"class":"tiles"},[tile("pending","Waiting"),tile("approved","Active"),tile("closed","Closed")]));
+  root.appendChild(offerCard());
   root.appendChild(newKeyForm());
   var bar=h("div",{"class":"bar"});
   [["pending","Waiting"],["approved","Active"],["closed","Closed"],["all","All"]].forEach(function(f){
@@ -161,6 +165,28 @@ function panel(){
   bar.appendChild(q);root.appendChild(bar);
   els.list=h("div",{id:"list"});root.appendChild(els.list);
   renderList()}
+var PROMO=null,SKEW=0,OFFER_EL=null;
+function setPromo(j){PROMO=j&&j.promo||null;SKEW=j&&j.now?j.now-Date.now():0;if(OFFER_EL)paintOffer()}
+function offerCard(){OFFER_EL=h("div",{"class":"item",id:"offer"});paintOffer();return OFFER_EL}
+function paintOffer(){
+  var left=PROMO?PROMO.endsAt-(Date.now()+SKEW):0;
+  OFFER_EL.innerHTML="";
+  if(PROMO&&left>0){
+    var t=Math.floor(left/1000),hh=Math.floor(t/3600),mm=Math.floor(t%3600/60),ss=t%60,z=function(n){return(n<10?"0":"")+n};
+    OFFER_EL.appendChild(h("div",{"class":"hd"},[h("div",{"class":"contact"},["8-hour offer is running: Matches / Differs at $"+PROMO.price]),h("span",{"class":"chip approved"},["live"])]));
+    OFFER_EL.appendChild(h("div",{"class":"meta"},[h("span",{id:"offer-t"},["Ends in "+z(hh)+":"+z(mm)+":"+z(ss)]),h("span",{},["Clients see the same countdown. Their price returns to $150 when it ends."])]));
+    OFFER_EL.appendChild(h("div",{"class":"acts"},[guarded("Stop offer now","bad sm",function(){offerAct("promo_stop")})]));
+  }else{
+    if(PROMO){PROMO=null}
+    OFFER_EL.appendChild(h("div",{"class":"hd"},[h("div",{"class":"contact"},["Limited offer: Matches / Differs at $80"]),h("span",{"class":"chip closed"},["off"])]));
+    OFFER_EL.appendChild(h("div",{"class":"meta"},[h("span",{},["Starts a real 8-hour countdown on the site now. Normal price is $150. It ends by itself."])]));
+    OFFER_EL.appendChild(h("div",{"class":"acts"},[guarded("Start 8-hour offer","ok sm",function(){offerAct("promo_start")})]));
+  }}
+function offerAct(a){api("POST",{action:a}).then(function(j){setPromo(j);toast(a==="promo_start"?"Offer started. It ends in 8 hours.":"Offer stopped.")}).catch(function(){toast("Could not change the offer. Try again.")})}
+setInterval(function(){if(!(OFFER_EL&&OFFER_EL.isConnected&&PROMO))return;
+  var left=PROMO.endsAt-(Date.now()+SKEW);if(left<=0)return paintOffer();
+  var e=document.getElementById("offer-t"),t=Math.floor(left/1000),z=function(n){return(n<10?"0":"")+n};
+  if(e)e.textContent="Ends in "+z(Math.floor(t/3600))+":"+z(Math.floor(t%3600/60))+":"+z(t%60)},1000);
 function newKeyForm(){
   var plan=h("select",{"aria-label":"Plan"},Object.keys(PLANS).map(function(k){return h("option",{value:k},[PLANS[k][0]+" ($"+PLANS[k][1]+")"])})),
       who=h("input",{id:"nk-who",placeholder:"Client name or WhatsApp number","aria-label":"Client name or WhatsApp number",maxlength:"60"}),
@@ -208,7 +234,7 @@ function card(i){
   var d=String(i.contact||"").replace(/\D/g,"");if(d.length===10&&d.charAt(0)==="0")d="254"+d.slice(1);
   if(d.length>=9)acts.push(h("a",{"class":"btn g sm",href:"https://wa.me/"+d,target:"_blank",rel:"noopener"},["WhatsApp"]));
   acts.push(guarded("Delete","g sm",function(){act("delete",i.id)}));
-  var meta=[h("span",{},[pl[0]+" ($"+pl[1]+")"]),h("span",{},[METH[i.method]||String(i.method)]),h("span",{title:new Date(i.createdAt).toLocaleString()},[when(i.createdAt)])];
+  var meta=[h("span",{},[pl[0]+" ($"+(i.offer?80:pl[1])+(i.offer?", offer price":"")+")"]),h("span",{},[METH[i.method]||String(i.method)]),h("span",{title:new Date(i.createdAt).toLocaleString()},[when(i.createdAt)])];
   if(st==="approved"&&i.expiresAt)meta.push(h("span",{},["Active until "+day(i.expiresAt)+" ("+Math.max(0,Math.ceil((i.expiresAt-Date.now())/864e5))+" days left)"]));
   if(i.receipt)meta.push(h("span",{},["Paid automatically \u00B7 M-Pesa receipt "+i.receipt+(i.paidKes?" (KES "+i.paidKes+")":"")]));
   else if(i.stk&&st==="pending")meta.push(h("span",{},["M-Pesa prompt sent \u00B7 waiting for the client to enter their PIN"]));
@@ -224,11 +250,11 @@ function act(a,id,plan){
     return refresh(true)}).catch(function(e){
     if(e.status===401||e.status===429)signOut(errText(e));else toast("That did not go through. Try again.")})}
 function refresh(quiet){
-  return api("GET").then(function(j){ITEMS=j.items||[];if(els.list)renderList();if(!quiet)toast("Updated.")}).catch(function(e){
+  return api("GET").then(function(j){ITEMS=j.items||[];setPromo(j);if(els.list)renderList();if(!quiet)toast("Updated.")}).catch(function(e){
     if(e.status===401||e.status===429)signOut(errText(e));else if(!quiet)toast("Could not refresh. Check your connection.")})}
 function load(fromLogin){
   return api("GET").then(function(j){
-    ITEMS=j.items||[];
+    ITEMS=j.items||[];setPromo(j);
     if(!DEMO){try{sessionStorage.setItem("dpk",KEY)}catch(e){}}
     panel();startTimer()}).catch(function(e){
     if(!DEMO)KEY="";

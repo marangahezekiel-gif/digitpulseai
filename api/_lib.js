@@ -83,6 +83,23 @@ function effective(rec) {
   return rec;
 }
 
+// The limited-time offer the owner starts from /admin: Matches / Differs at a lower price until a fixed end time.
+// It is stored with a matching expiry, so once the end time passes it is simply gone.
+const PROMO_KEY = "dp:promo";
+const PROMO_PLAN = "matches";
+const PROMO_PRICE = 80;
+const PROMO_MS = 8 * 60 * 60 * 1000;
+async function promo() {
+  const [v] = await redis([["GET", PROMO_KEY]]);
+  if (!v) return null;
+  try {
+    const p = JSON.parse(v);
+    return p && p.endsAt > Date.now() ? { plan: PROMO_PLAN, price: PROMO_PRICE, endsAt: p.endsAt } : null;
+  } catch (e) {
+    return null;
+  }
+}
+
 function cleanText(s, max) {
   return String(s || "")
     .replace(/[\u0000-\u001f\u007f<>]/g, "")
@@ -138,6 +155,9 @@ module.exports = {
   keyIdx,
   linkOf,
   deviceCount,
+  promo,
+  PROMO_KEY,
+  PROMO_MS,
   PLANS,
   METHODS,
   ID_RE,

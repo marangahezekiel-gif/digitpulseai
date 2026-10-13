@@ -25,7 +25,9 @@ module.exports = async (req, res) => {
 
     const rate = await M.kesRate();
     if (!rate) return L.send(res, 502, { error: "rate_unavailable" });
-    const amount = Math.ceil(PRICE[b.plan] * rate);
+    const promo = await L.promo();
+    const usd = promo && promo.plan === b.plan ? promo.price : PRICE[b.plan];
+    const amount = Math.ceil(usd * rate);
 
     const host = String(req.headers["x-forwarded-host"] || req.headers.host || "").replace(/[^a-z0-9.:-]/gi, "");
     const cb = "https://" + host + "/api/mpesa-callback?s=" + encodeURIComponent(process.env.MPESA_CALLBACK_SECRET);
@@ -39,6 +41,7 @@ module.exports = async (req, res) => {
       id: b.id, plan: b.plan, method: "mpesa", contact: ph, status: "pending", origin: true,
       createdAt: (old && old.createdAt) || now, updatedAt: now, approvedAt: null, expiresAt: null,
       stk: ck,
+      offer: !!(promo && promo.plan === b.plan),
     });
     await L.redis([
       ["SET", "dp:stk:" + ck, JSON.stringify({ id: b.id, plan: b.plan, amount }), "EX", 86400],

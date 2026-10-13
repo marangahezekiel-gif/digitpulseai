@@ -2,6 +2,7 @@
 // GET  /api/admin                          -> list every request and access key
 // POST /api/admin { action, id, plan, contact }
 //        approve | reject | revoke | delete | rekey (new key, unlinks other devices)
+//        promo_start | promo_stop  (the 8-hour $80 Matches offer)
 //        create  (a new approved client with an access key, for someone who paid you directly)
 // Every call must carry the owner's secret in the x-admin-key header. The secret lives only
 // in the ADMIN_KEY environment variable on Vercel. After 10 wrong tries an address is locked
@@ -55,11 +56,22 @@ module.exports = async (req, res) => {
         });
       }
       items.sort((a, b) => b.createdAt - a.createdAt);
-      return L.send(res, 200, { items });
+      return L.send(res, 200, { items, promo: await L.promo(), now: Date.now() });
     }
 
     const b = L.body(req);
     const now = Date.now();
+
+    // The 8-hour offer: start it (the clock starts now, the same end time for every visitor) or stop it early.
+    if (b.action === "promo_start") {
+      const endsAt = now + L.PROMO_MS;
+      await L.redis([["SET", L.PROMO_KEY, JSON.stringify({ endsAt }), "EX", Math.ceil(L.PROMO_MS / 1000) + 60]]);
+      return L.send(res, 200, { ok: true, promo: await L.promo(), now });
+    }
+    if (b.action === "promo_stop") {
+      await L.redis([["DEL", L.PROMO_KEY]]);
+      return L.send(res, 200, { ok: true, promo: null, now });
+    }
 
     if (b.action === "create") {
       const contact = L.cleanText(b.contact, 60);

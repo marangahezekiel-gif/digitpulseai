@@ -93,3 +93,7 @@ Test with `MPESA_ENV=sandbox` first. The amount is always worked out on the serv
 ## Install as an app
 
 The site is installable: Chrome and Edge on Android and desktop show an "Install app" button at the top; on iPhone, tap Share in Safari, then "Add to Home Screen". It gets its own icon and opens full screen. Only the site's own page and icons are saved for offline opening; payments, keys and login always use the network.
+
+## 8-hour offer (Matches / Differs at $80)
+
+In /admin, the "Limited offer" card at the top has **Start 8-hour offer** (tap twice to confirm). From that moment the site shows Matches / Differs at $80 with the normal $150 crossed out and a countdown. Only the Matches price changes. Every visitor sees the same end time, taken from the server clock, and it ends by itself after 8 hours. **Stop offer now** ends it early. M-Pesa prompts charge the $80 price while it runs. Requests made during the offer are marked "offer price" on the client's card, so you can still honour them if you approve after it ends. Start it again whenever you want a new offer.

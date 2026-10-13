@@ -28,6 +28,7 @@ module.exports = async (req, res) => {
     }
 
     // A new request keeps any access key and linked devices the record already had.
+    const pr = await L.promo();
     const rec = Object.assign({}, old || {}, {
       id: b.id,
       plan: b.plan,
@@ -39,6 +40,7 @@ module.exports = async (req, res) => {
       updatedAt: now,
       approvedAt: null,
       expiresAt: null,
+      offer: !!(pr && pr.plan === b.plan), // asked while the limited-time price was running
     });
     await L.redis([
       ["SET", key, JSON.stringify(rec)],
