@@ -2,124 +2,93 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DigitpulseAi - LIVE Signal Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DigitpulseAi</title>
 <style>
-:root{--bg:#020a06;--card:#08140d;--bd:#123a1e;--tx:#e8ffec;--ac:#3cff6e;--ac2:#ffd23c;--red:#ff3b3b}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow-x:hidden}
-.top{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;border-bottom:1px solid var(--bd);background:rgba(0,0,0,.6);backdrop-filter:blur(10px)}
-.entry{font-size:clamp(2rem,7vw,4.8rem);font-weight:1000;letter-spacing:-2px;color:var(--ac);text-shadow:0 0 20px rgba(60,255,110,.6);line-height:.9}
-.live{color:var(--red);font-weight:1000;font-size:clamp(1.5rem,4vw,3rem);display:flex;align-items:center;gap:12px}
-.live i{width:18px;height:18px;background:var(--red);border-radius:50%;display:inline-block;box-shadow:0 0 15px var(--red);animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.2)}}
-.sub{padding:8px 28px;font-size:.75rem;letter-spacing:1px;color:#6f9d7a;display:flex;gap:12px;flex-wrap:wrap;border-bottom:1px solid #0a2010}
-.main{min-height:72vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 16px;text-align:center;position:relative;background:radial-gradient(600px 300px at 50% 40%, rgba(60,255,110,.08), transparent), linear-gradient(rgba(60,255,110,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(60,255,110,.03) 1px, transparent 1px);background-size:auto, 50px 50px, 50px 50px}
-.hour{width:180px;height:180px;border:3px solid var(--ac);border-radius:50%;display:grid;place-items:center;margin:18px auto;box-shadow:0 0 40px rgba(60,255,110,.4), inset 0 0 20px rgba(60,255,110,.2);background:rgba(0,0,0,.7)}
-.hour span{font-size:4.5rem}
-.conf{font-size:clamp(1.8rem,5vw,3.2rem);font-weight:900;color:var(--ac2);text-shadow:0 0 15px rgba(255,210,60,.4);margin-top:14px}
-.next{font-size:clamp(1.6rem,5vw,3rem);font-weight:1000;color:var(--ac);letter-spacing:-1px;margin-top:6px;text-shadow:0 0 18px rgba(60,255,110,.6)}
-.sig{margin-top:18px;padding:14px 28px;border:2px solid var(--ac);border-radius:12px;font-size:clamp(1.2rem,3vw,2rem);font-weight:1000;background:rgba(60,255,110,.12);min-width:280px}
-.sig.MATCHES{border-color:var(--ac);color:var(--ac)}
-.sig.DIFFERS{border-color:var(--red);color:var(--red)}
-.sig.WAIT{border-color:#2a3a2e;color:#6f9d7a}
-.grid{max-width:1100px;margin:0 auto;padding:20px 16px;display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px}
-.digits{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:10px}
-.d{border:1px solid var(--bd);border-radius:8px;padding:10px 0;text-align:center;font-weight:900}
-.d.hot{border-color:var(--ac);background:rgba(60,255,110,.15);color:var(--ac)}
-.bottom{height:4px;background:var(--ac);box-shadow:0 0 20px var(--ac);margin-top:10px}
-.foot{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;padding:12px;font-size:.75rem;color:#6f9d7a;letter-spacing:.5px}
-button{cursor:pointer}
-.btn{background:linear-gradient(135deg,#1a6d33,var(--ac));border:0;color:#02140a;font-weight:900;padding:12px 20px;border-radius:10px}
+:root{--bg:#0b1020;--card:#141b34;--bd:#263056;--tx:#e8ecff;--mu:#9aa6d6;--ac:#22d3a6;--ac2:#6366f1;--wr:#fbbf24;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f6ff;--card:#fff;--bd:#d9def5;--tx:#141b34;--mu:#5b6591;--ac:#0d9f7e;--ac2:#4f46e5;--wr:#b45309}}
+:root[data-theme="light"]{--bg:#f4f6ff;--card:#fff;--bd:#d9def5;--tx:#141b34;--mu:#5b6591;--ac:#0d9f7e;--ac2:#4f46e5;--wr:#b45309}
+:root[data-theme="dark"]{--bg:#0b1020;--card:#141b34;--bd:#263056;--tx:#e8ecff;--mu:#9aa6d6;--ac:#22d3a6;--ac2:#6366f1;--wr:#fbbf24}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.w{max-width:960px;margin:0 auto;padding:20px 16px 48px}
+nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.logo{font-weight:800;font-size:1.25rem}.logo b{color:var(--ac)}
+.pill{font-size:.8rem;color:var(--mu);border:1px solid var(--bd);border-radius:99px;padding:4px 10px}
+h1{font-size:clamp(1.9rem,6vw,3rem);line-height:1.15;margin:.2em 0}
+h2{margin:.2em 0 .6em}
+p{color:var(--mu)}
+.btn{background:linear-gradient(135deg,var(--ac2),var(--ac));color:#fff;border:0;border-radius:10px;padding:12px 20px;font-size:1rem;font-weight:700;cursor:pointer}
 .btn.g{background:transparent;border:1px solid var(--bd);color:var(--tx)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.plan{cursor:pointer;position:relative;transition:.15s}
+.plan:hover,.plan.sel{border-color:var(--ac);transform:translateY(-2px)}
+.price{font-size:2rem;font-weight:800}.price small{font-size:.9rem;color:var(--mu);font-weight:400}
+.tag{position:absolute;top:-10px;right:14px;background:var(--ac);color:#04221b;font-size:.7rem;font-weight:800;padding:2px 10px;border-radius:99px}
+ul{padding-left:18px;color:var(--mu)}
+.row{display:flex;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px;margin:6px 0 14px}
+.row code{flex:1;word-break:break-all;font-size:.9rem}
+.row button{border:0;background:var(--ac2);color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer}
+.tabs{display:flex;gap:8px;margin:14px 0}
+.tabs .btn{flex:1}
+.hid{display:none}
+.steps{display:flex;gap:6px;margin-bottom:18px;font-size:.75rem;color:var(--mu);flex-wrap:wrap}
+.steps span{padding:3px 10px;border-radius:99px;border:1px solid var(--bd)}.steps .on{background:var(--ac);color:#04221b;border-color:var(--ac);font-weight:700}
+.wait{text-align:center}.wait .ic{font-size:3rem}
+.note{font-size:.8rem;color:var(--wr)}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 </style>
 </head>
 <body>
-<div class="top">
-<div class="entry" id="entry">ENTRY IN 3S</div>
-<div class="live"><i></i>LIVE</div>
+<div class="w">
+<nav><div class="logo">Digitpulse<b>Ai</b></div></nav>
+<div class="steps" id="steps"></div>
+<main id="app"></main>
 </div>
-<div class="sub"><span>TRADING SIGNAL PANEL</span><span>•</span><span>SCALPING STRATEGY</span><span>•</span><span>ACTIVE SIGNAL</span><span id="market">• R_100</span></div>
-
-<div class="main">
-<div class="hour"><span>⌛</span></div>
-<div class="conf" id="conf">Confidence: 65%</div>
-<div class="next">NEXT PREDICTION</div>
-<div class="sig WAIT" id="signal">ANALYZING TICKS...</div>
-<div style="margin-top:16px;display:flex;gap:10px"><button class="btn g" onclick="switchMarket()">Switch Market</button><button class="btn g" onclick="connect()">Reconnect</button></div>
-</div>
-
-<div class="bottom"></div>
-
-<div class="grid">
-<div class="card"><b style="color:var(--ac)">Digit Distribution (last 100)</b><div class="digits" id="dgrid"></div><div style="margin-top:10px;font-size:.8rem;color:#6f9d7a" id="ticks"></div></div>
-<div class="card"><b>Signal Logic - Backend</b><p style="font-size:.85rem;color:#8fb99d;margin-top:8px">Live Deriv API. Last 100 ticks → frequency analysis. High freq >18% = MATCHES, Low <5% = DIFFERS. Even/Odd + Over/Under included.</p><div style="margin-top:12px;font-size:.8rem"><div>Plan: <b id="plan" style="color:var(--ac)">matches</b></div><div>Last Digit: <b id="last">-</b></div><div>Confidence calc: frequency deviation + streak</div></div></div>
-</div>
-
-<div class="foot"><span>PAIR — VOLATILITY</span><span>•</span><span>TIMEFRAME — M1</span><span>•</span><span>RISK — LOW</span><span>•</span><span id="time">UPDATED — --:--:-- UTC</span></div>
-
 <script>
-var APP_ID="34yJS0kUHIBFwADximqJH";
-var S={market:"R_100",digits:[],last:null,plan:"matches",entry:3,confidence:65,signal:"WAIT"};
-var ws=null,timer=null;
-
-function connect(){
- if(ws) ws.close();
- ws=new WebSocket("wss://ws.binaryws.com/websockets/v3?app_id="+APP_ID);
- ws.onopen=()=>{ws.send(JSON.stringify({ticks_history:S.market,count:100,end:"latest"})); ws.send(JSON.stringify({ticks:S.market}))};
- ws.onmessage=e=>{
-  var d=JSON.parse(e.data);
-  if(d.history){
-    S.digits=d.history.prices.map(p=>parseInt(p.toString().slice(-1))).reverse();
-    analyze();
-  }
-  if(d.tick){
-    var dig=parseInt(d.tick.quote.toString().slice(-1));
-    S.last=dig; S.digits.unshift(dig); if(S.digits.length>100) S.digits.pop();
-    S.entry=3; S.confidence=55+Math.floor(Math.random()*35);
-    analyze();
-  }
- };
-}
-function analyze(){
- if(S.digits.length<10) return;
- var freq={}; S.digits.forEach(x=>freq[x]=(freq[x]||0)+1);
- var last=S.digits[0];
- var fLast=freq[last]||0;
- var most=Object.keys(freq).reduce((a,b)=>freq[a]>freq[b]?a:b);
- // BOLD LOGIC
- if(fLast>=18) S.signal="MATCHES "+last;
- else if(fLast<=4) S.signal="DIFFERS "+last;
- else if(last%2===0) S.signal="EVEN - RISE";
- else S.signal="ODD - FALL";
- if(last>4) S.signal+=" | OVER 4"; else S.signal+=" | UNDER 4";
- render();
-}
+var APP_ID="34yJS0kUHIBFwADximqJH",WA="254741092009",USDT="TFqjtFXBmu6aeFMar3VZzijJqRcNYzXndB",MPESA="0741080064",PAYEE="Hezekiel Machuka";
+var PLANS=[
+{id:"matches",name:"Matches / Differs",price:150,tag:"Best value",f:["All market analysis","Matches / Differs signals","Rise/Fall, Even/Odd, Over/Under","Full year access"]},
+{id:"rfeo",name:"Rise/Fall + Even/Odd",price:100,f:["All other markets","Rise/Fall analysis","Even/Odd analysis","No Matches / Differs"]},
+{id:"ou",name:"Over / Under",price:80,f:["Over/Under analysis","Digit stats and trends","Full year access"]}];
+var S={view:"home",account:null,plan:null,method:"usdt",status:null};
+function load(){try{var d=JSON.parse(localStorage.getItem("dpai")||"{}");for(var k in d)S[k]=d[k]}catch(e){}}
+function save(){try{localStorage.setItem("dpai",JSON.stringify({account:S.account,plan:S.plan,status:S.status}))}catch(e){}}
+function plan(){return PLANS.filter(function(p){return p.id===S.plan})[0]}
+function go(v){S.view=v;render();window.scrollTo(0,0)}
+function copy(t,b){var ok=function(){var o=b.textContent;b.textContent="Copied!";setTimeout(function(){b.textContent=o},1400)};
+try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}
+function fb(){var a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){}a.remove()}}
+function parseOAuth(){var q=new URLSearchParams(location.search),a=q.get("acct1");
+if(a){S.account=a;save();try{history.replaceState(null,"",location.pathname)}catch(e){}}}
+function derivLogin(){location.href="https://oauth.deriv.com/oauth2/authorize?app_id="+APP_ID}
+function demo(){S.account="Demo-User";save();go(S.plan?"pay":"plans")}
+function pick(id){S.plan=id;save();if(S.status==="pending")go("wait");else if(!S.account)go("login");else go("pay")}
+function waLink(){var p=plan();return "https://wa.me/"+WA+"?text="+encodeURIComponent("Hello, I have paid for DigitpulseAi ("+p.name+" - $"+p.price+"/yr) via "+(S.method==="usdt"?"USDT TRC20":"M-Pesa")+". Account: "+S.account+". Screenshot attached.")}
+function paid(){S.status="pending";save();window.open(waLink(),"_blank");go("wait")}
+function reset(){S.plan=null;S.status=null;S.method="usdt";save();go("plans")}
+function logout(){S={view:"home",account:null,plan:null,status:null,method:"usdt"};save();render()}
+function setM(m){S.method=m;render()}
+function accessTool(){if(!S.account)go("login");else if(S.status==="pending")go("wait");else go("plans")}
+function row(v,id){return '<div class="row"><code>'+v+'</code><button onclick="copy(\''+v+'\',this)">Copy</button></div>'}
+var V={
+home:function(){return '<div class="card" style="padding:36px 22px"><span class="pill">Deriv digit analysis</span><h1>Read the digits.<br>Trade with <span style="color:var(--ac)">clarity</span>.</h1><p>DigitpulseAi analyses Deriv markets and surfaces Matches/Differs, Rise/Fall, Even/Odd and Over/Under signals in real time.</p><div class="acts"><button class="btn" onclick="accessTool()">Access Tool</button><button class="btn g" onclick="go(\'plans\')">View Pricing</button>'+(S.account?'<button class="btn g" onclick="logout()">Disconnect</button>':'')+'</div></div><div class="grid" style="margin-top:14px"><div class="card"><b>Live digit stats</b><p>Frequency and streaks per market.</p></div><div class="card"><b>All markets</b><p>Pick a plan, unlock the markets you need.</p></div><div class="card"><b>Secure Deriv login</b><p>Connect with official Deriv OAuth.</p></div></div>'},
+login:function(){return '<div class="card" style="max-width:440px;margin:0 auto"><h2>Connect your Deriv account</h2><p>Log in with Deriv to link your account, then continue to billing.</p><button class="btn" style="width:100%" onclick="derivLogin()">Connect with Deriv</button><div class="acts"><button class="btn g" onclick="demo()">Continue in preview mode</button><button class="btn g" onclick="go(\'home\')">Back</button></div><p class="note">Preview mode skips Deriv login so you can test the billing flow.</p></div>'},
+plans:function(){return '<h2>Choose your plan</h2><p>Billed yearly. Select an offer to continue.</p><div class="grid">'+PLANS.map(function(p){return '<div class="card plan" style="display:flex;flex-direction:column">'+(p.tag?'<span class="tag">'+p.tag+'</span>':'')+'<b>'+p.name+'</b><div class="price">$'+p.price+'<small>/yr</small></div><ul style="flex:1">'+p.f.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul><button class="btn" style="width:100%" onclick="pick(\''+p.id+'\')">Choose plan</button></div>'}).join('')+'</div><div class="acts"><button class="btn g" onclick="go(\'home\')">Back</button></div>'},
+pay:function(){var p=plan(),u=S.method==="usdt";return '<div class="card" style="max-width:520px;margin:0 auto"><h2>Payment</h2><p>'+p.name+' &middot; <b style="color:var(--tx)">$'+p.price+'/yr</b></p><div class="tabs"><button class="btn'+(u?'':' g')+'" onclick="setM(\'usdt\')">USDT TRC20</button><button class="btn'+(u?' g':'')+'" onclick="setM(\'mpesa\')">M-Pesa</button></div>'+(u?'<p>Send exactly <b style="color:var(--tx)">'+p.price+' USDT</b> on the <b style="color:var(--tx)">TRC20</b> network to:</p>'+row(USDT)+'<p class="note">Only use the TRC20 network. Other networks will be lost.</p>':'<p>Send <b style="color:var(--tx)">KES equivalent of $'+p.price+'</b> to:</p>'+row(MPESA)+'<p>Name: <b style="color:var(--tx)">'+PAYEE+'</b></p>')+'<p>After paying, tap below and send your payment screenshot on WhatsApp.</p><div class="acts"><button class="btn" onclick="paid()">I have made the payment</button><button class="btn g" onclick="go(\'plans\')">Back</button></div></div>'},
+wait:function(){var p=plan();return '<div class="card wait" style="max-width:480px;margin:0 auto"><div class="ic">&#9203;</div><h2>Waiting for approval</h2><p>We received your payment request for <b style="color:var(--tx)">'+(p?p.name:'')+'</b>. Once you send your screenshot on WhatsApp, it will be approved shortly. You do not need to pay again &mdash; just return to this page.</p><div class="acts" style="justify-content:center"><a href="'+waLink()+'" target="_blank" rel="noopener"><button class="btn">Open WhatsApp</button></a><button class="btn g" onclick="reset()">Reset (preview)</button></div></div>'}
+};
+var ST=[["home","Welcome"],["login","Connect"],["plans","Plan"],["pay","Pay"],["wait","Approval"]];
 function render(){
- document.getElementById("last").textContent=S.last??"-";
- document.getElementById("plan").textContent=S.plan;
- document.getElementById("conf").textContent="Confidence: "+S.confidence+"%";
- document.getElementById("signal").textContent=S.signal;
- document.getElementById("signal").className="sig "+(S.signal.includes("MATCHES")?"MATCHES":S.signal.includes("DIFFERS")?"DIFFERS":"WAIT");
- var fg={}; S.digits.forEach(x=>fg[x]=(fg[x]||0)+1);
- document.getElementById("dgrid").innerHTML=[0,1,2,3,4,5,6,7,8,9].map(n=>'<div class="d '+(fg[n]>12?"hot":"")+'">'+n+'<br><small>'+(fg[n]||0)+'</small></div>').join('');
- document.getElementById("ticks").textContent=S.digits.slice(0,30).join(" - ");
- document.getElementById("market").textContent="• "+S.market;
- document.getElementById("time").textContent="UPDATED — "+new Date().toUTCString().split(" ")[4]+" UTC";
-}
-function countdown(){
- if(timer) clearInterval(timer);
- timer=setInterval(()=>{
-  S.entry--; if(S.entry<=0) S.entry=3;
-  document.getElementById("entry").textContent="ENTRY IN "+S.entry+"S";
- },1000);
-}
-function switchMarket(){
- var ms=["R_100","R_50","R_25","R_10"]; var i=ms.indexOf(S.market); S.market=ms[(i+1)%ms.length]; connect();
-}
-connect(); countdown(); render();
-setInterval(()=>{if(S.digits.length) analyze()},3000);
+document.getElementById("steps").innerHTML=ST.map(function(s){return '<span class="'+(s[0]===S.view?'on':'')+'">'+s[1]+'</span>'}).join('');
+document.getElementById("app").innerHTML=V[S.view]()}
+load();parseOAuth();
+if(S.status==="pending"&&S.account)S.view="wait";else if(S.account&&S.plan)S.view="pay";
+render();
 </script>
 </body>
 </html>
