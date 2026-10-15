@@ -12,7 +12,8 @@
 @media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f6ff;--card:#fff;--soft:#eef1ff;--bd:#d9def5;--tx:#141b34;--mu:#5b6591;--ac:#0d9f7e;--ac2:#4f46e5;--wr:#b45309;--bad:#dc2626;color-scheme:light}}
 :root[data-theme="light"]{--bg:#f4f6ff;--card:#fff;--soft:#eef1ff;--bd:#d9def5;--tx:#141b34;--mu:#5b6591;--ac:#0d9f7e;--ac2:#4f46e5;--wr:#b45309;--bad:#dc2626;color-scheme:light}
 *{box-sizing:border-box}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scrollbar-gutter:stable;overflow-anchor:none}
+#offer-t{display:inline-block;min-width:9.5em;font-variant-numeric:tabular-nums}
 body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
 .w{max-width:980px;margin:0 auto;padding-inline:16px;padding-block:20px 56px}
 .top{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:18px}
@@ -166,7 +167,7 @@ function panel(){
   els.list=h("div",{id:"list"});root.appendChild(els.list);
   renderList()}
 var PROMO=null,SKEW=0,OFFER_EL=null;
-function setPromo(j){PROMO=j&&j.promo||null;SKEW=j&&j.now?j.now-Date.now():0;if(OFFER_EL)paintOffer()}
+function setPromo(j){var old=PROMO?PROMO.endsAt:0;PROMO=j&&j.promo||null;SKEW=j&&j.now?j.now-Date.now():0;if(OFFER_EL&&(PROMO?PROMO.endsAt:0)!==old)paintOffer()}
 function offerCard(){OFFER_EL=h("div",{"class":"item",id:"offer"});paintOffer();return OFFER_EL}
 function paintOffer(){
   var left=PROMO?PROMO.endsAt-(Date.now()+SKEW):0;
@@ -202,7 +203,9 @@ function newKeyForm(){
           go.disabled=false;if(e.status===401||e.status===429)signOut(errText(e));else toast("That did not go through. Try again.")})});
   return h("details",{"class":"new",id:"nk"},[h("summary",{},["New access key"]),
     h("div",{"class":"nf"},[h("div",{style:"color:var(--mu);font-size:.85rem"},["For someone who paid you directly. They enter the key on the site under \"Access using a key\"."]),plan,who,go,out])])}
+var LAST_SIG="";
 function renderList(){
+  var sig=JSON.stringify([ITEMS,FILTER,Q]);if(sig===LAST_SIG&&els.list&&els.list.children.length)return;LAST_SIG=sig;var y=window.scrollY;
   var c={pending:0,approved:0,closed:0,all:ITEMS.length};
   ITEMS.forEach(function(i){c[grp(i.status)]++});
   ["pending","approved","closed"].forEach(function(k){els.tiles[k].textContent=String(c[k])});
@@ -211,7 +214,8 @@ function renderList(){
     return(FILTER==="all"||grp(i.status)===FILTER)&&(!q||[i.contact,i.id,(PLANS[i.plan]||[""])[0],METH[i.method]||"",i.status].join(" ").toLowerCase().indexOf(q)>-1)});
   els.list.innerHTML="";
   if(!rows.length)els.list.appendChild(h("div",{"class":"empty"},[ITEMS.length?"Nothing matches this view.":"No payment requests yet. They appear here when a client taps \"I have made the payment\"."]));
-  rows.forEach(function(i){els.list.appendChild(card(i))})}
+  rows.forEach(function(i){els.list.appendChild(card(i))});
+  if(window.scrollY!==y)window.scrollTo(0,y)}
 function card(i){
   var pl=PLANS[i.plan]||[i.plan,0],st=i.status,acts=[];
   var sel=h("select",{"aria-label":"Plan to grant"},Object.keys(PLANS).map(function(k){
@@ -250,7 +254,7 @@ function act(a,id,plan){
     return refresh(true)}).catch(function(e){
     if(e.status===401||e.status===429)signOut(errText(e));else toast("That did not go through. Try again.")})}
 function refresh(quiet){
-  return api("GET").then(function(j){ITEMS=j.items||[];setPromo(j);if(els.list)renderList();if(!quiet)toast("Updated.")}).catch(function(e){
+  return api("GET").then(function(j){ITEMS=j.items||[];setPromo(j);if(!quiet)LAST_SIG="";if(els.list)renderList();if(!quiet)toast("Updated.")}).catch(function(e){
     if(e.status===401||e.status===429)signOut(errText(e));else if(!quiet)toast("Could not refresh. Check your connection.")})}
 function load(fromLogin){
   return api("GET").then(function(j){

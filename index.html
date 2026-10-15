@@ -275,12 +275,12 @@ function arcTo(f,ms){var a=document.getElementById("dpa");if(!a)return;a.style.t
 function finish(){var t=DS.tab,v={},k,best=null,bc=0;DS.res.forEach(function(x){v[x]=(v[x]||0)+1});for(k in v){if(v[k]>bc){bc=v[k];best=k}}
 var p=0;WIN.forEach(function(w){p+=pct(t,best,w)});p/=WIN.length;
 var lab={md:DS.mdSide==="matches"?"MATCHES DIGIT":"DIFFERS DIGIT",rf:"RISE / FALL",eo:"EVEN / ODD",ou:"OVER / UNDER"}[t];
-DS.sig={l:lab,v:fmtVal(t,best),raw:best,t:t,p:p,e:expd(t),sc:(t==="md"&&DS.mdSide==="matches")?Math.max(0,Math.min(100,Math.round((p-10)/10*100))):null};if(DS.sig.sc!==null)DS.sig.go=DS.sig.sc>=GO;DS.phase="valid";DS.t0=Date.now();DS.rip=1;arcTo(0,16000)}
+DS.sig={l:lab,v:fmtVal(t,best),raw:best,t:t,p:p,e:expd(t),sc:(t==="md"&&DS.mdSide==="matches")?Math.max(0,Math.min(100,Math.round((p-10)/10*100))):null};if(DS.sig.sc!==null)DS.sig.go=DS.sig.sc>=GO;DS.phase="valid";DS.t0=Date.now();DS.rip=1;arcTo(0,23000)}
 function stepScan(){var k=DS.scan,dur=Math.round(STEP[k]*1000*(.8+Math.random()*.4));arcTo((k+1)/7,dur);
 DS.scT=setTimeout(function(){if(DS.phase!=="scan")return;DS.res.push(pick(DS.tab,WIN[k]));DS.scan=k+1;if(DS.scan>=7)finish();else stepScan();paintSig()},dur)}
 function startScan(){if(DS.phase==="scan"||DS.q.length<20||!DS.tab)return;clearTimeout(DS.scT);DS.phase="scan";DS.scan=0;DS.res=[];DS.sig=null;arcTo(0,0);paintSig();stepScan()}
 function resetSig(){clearTimeout(DS.scT);DS.phase="idle";DS.sig=null;DS.scan=0;arcTo(0,0);paintSig()}
-function loop(){if(DS.phase==="valid"&&Date.now()-DS.t0>=16000){DS.phase="invalid";paintSig()}}
+function loop(){if(DS.phase==="valid"&&Date.now()-DS.t0>=23000){DS.phase="invalid";paintSig()}}
 function digXY(i,r){var a=(i*36-90)*Math.PI/180;return[100+r*Math.cos(a),100+r*Math.sin(a)]}
 function sigSvg(){var n='',i,q;for(i=0;i<10;i++){q=digXY(i,88);n+='<text id="dg'+i+'" x="'+q[0].toFixed(1)+'" y="'+q[1].toFixed(1)+'" text-anchor="middle" dominant-baseline="central" font-size="6.6" font-weight="800" fill="#9fb0ff">'+i+'</text>';
 var a=digXY(i+.5,86),b=digXY(i+.5,91);n+='<line x1="'+a[0].toFixed(1)+'" y1="'+a[1].toFixed(1)+'" x2="'+b[0].toFixed(1)+'" y2="'+b[1].toFixed(1)+'" stroke="#56649f" stroke-width="1.2"/>'}
