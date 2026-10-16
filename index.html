@@ -275,11 +275,33 @@ function arcTo(f,ms){var a=document.getElementById("dpa");if(!a)return;a.style.t
 function finish(){var t=DS.tab,v={},k,best=null,bc=0;DS.res.forEach(function(x){v[x]=(v[x]||0)+1});for(k in v){if(v[k]>bc){bc=v[k];best=k}}
 var p=0;WIN.forEach(function(w){p+=pct(t,best,w)});p/=WIN.length;
 var lab={md:DS.mdSide==="matches"?"MATCHES DIGIT":"DIFFERS DIGIT",rf:"RISE / FALL",eo:"EVEN / ODD",ou:"OVER / UNDER"}[t];
-DS.sig={l:lab,v:fmtVal(t,best),raw:best,t:t,p:p,e:expd(t),sc:(t==="md"&&DS.mdSide==="matches")?Math.max(0,Math.min(100,Math.round((p-10)/10*100))):null};if(DS.sig.sc!==null)DS.sig.go=DS.sig.sc>=GO;DS.phase="valid";DS.t0=Date.now();DS.rip=1;arcTo(0,23000)}
+DS.sig={l:lab,v:fmtVal(t,best),raw:best,t:t,p:p,e:expd(t),sc:(t==="md"&&DS.mdSide==="matches")?Math.max(0,Math.min(100,Math.round((p-10)/10*100))):null};if(DS.sig.sc!==null)DS.sig.go=DS.sig.sc>=GO;DS.phase="valid";DS.t0=Date.now();DS.rip=1;arcTo(0,23000);sigSave()}
 function stepScan(){var k=DS.scan,dur=Math.round(STEP[k]*1000*(.8+Math.random()*.4));arcTo((k+1)/7,dur);
 DS.scT=setTimeout(function(){if(DS.phase!=="scan")return;DS.res.push(pick(DS.tab,WIN[k]));DS.scan=k+1;if(DS.scan>=7)finish();else stepScan();paintSig()},dur)}
 function startScan(){if(DS.phase==="scan"||DS.q.length<20||!DS.tab)return;clearTimeout(DS.scT);DS.phase="scan";DS.scan=0;DS.res=[];DS.sig=null;arcTo(0,0);paintSig();stepScan()}
-function resetSig(){clearTimeout(DS.scT);DS.phase="idle";DS.sig=null;DS.scan=0;arcTo(0,0);paintSig()}
+/* The last signal for each market / tab / option is kept on this device, so leaving the board and coming back shows the same signal (still counting down, or marked expired) instead of a blank board. */
+var SIGK="dpai_sig",SIGLIFE=23000;
+/* Also remember which market, tab and option was open, so a reload returns to the same board. */
+function selSave(){try{localStorage.setItem("dpai_sel",JSON.stringify({mk:DS.mk,tab:DS.tab,md:DS.mdSide,os:DS.ou.side,ob:DS.ou.b}))}catch(e){}}
+function selLoad(){if(DS.selDone)return;DS.selDone=1;try{var x=JSON.parse(localStorage.getItem("dpai_sel")||"null");if(!x||typeof x!=="object")return;
+if(typeof x.mk==="string"&&MK.some(function(m){return m[0]===x.mk}))DS.mk=x.mk;
+if(["md","rf","eo","ou"].indexOf(x.tab)>-1)DS.tab=x.tab;
+if(x.md==="matches"||x.md==="differs")DS.mdSide=x.md;
+if((x.os==="over"||x.os==="under")&&Number.isInteger(x.ob)&&x.ob>=0&&x.ob<=9){DS.ou.side=x.os;DS.ou.b=x.os==="over"?Math.min(x.ob,8):Math.max(x.ob,1)}}catch(e){}}
+function sigKey(){var t=DS.tab;return DS.mk+"|"+t+"|"+(t==="md"?DS.mdSide:t==="ou"?DS.ou.side+DS.ou.b:"")}
+function sigLoad(){try{var o=JSON.parse(localStorage.getItem(SIGK)||"{}");return o&&typeof o==="object"&&!Array.isArray(o)?o:{}}catch(e){return{}}}
+function sigSave(){try{var o=sigLoad(),now=Date.now(),k,ks;o[sigKey()]={sig:DS.sig,t0:DS.t0};
+for(k in o){if(!o[k]||typeof o[k].t0!=="number"||now-o[k].t0>864e5)delete o[k]}
+ks=Object.keys(o).sort(function(a,b){return o[b].t0-o[a].t0});ks.slice(40).forEach(function(x){delete o[x]});
+localStorage.setItem(SIGK,JSON.stringify(o))}catch(e){}}
+function sigClean(x){if(!x||typeof x!=="object")return null;var ok=/^[A-Za-z0-9 ▲▼.\/+-]{1,24}$/;
+if(["md","rf","eo","ou"].indexOf(x.t)<0||typeof x.l!=="string"||!/^[A-Z \/]{3,20}$/.test(x.l)||typeof x.v!=="string"||!ok.test(x.v)||typeof x.raw!=="string"||!/^[A-Za-z0-9]{1,12}$/.test(x.raw)||!isFinite(x.p)||!isFinite(x.e))return null;
+var sc=(x.sc===null||x.sc===undefined)?null:+x.sc;if(sc!==null&&!(sc>=0&&sc<=100))return null;
+var r={l:x.l,v:x.v,raw:x.raw,t:x.t,p:+x.p,e:+x.e,sc:sc};if(sc!==null)r.go=x.go===true;return r}
+function sigRestore(){var e=sigLoad()[sigKey()],now=Date.now(),c;if(!e||typeof e.t0!=="number"||e.t0>now+5000||now-e.t0>864e5)return false;c=sigClean(e.sig);if(!c)return false;
+DS.sig=c;DS.t0=e.t0;DS.phase=now-e.t0>=SIGLIFE?"invalid":"valid";return true}
+function arcResume(){if(DS.phase!=="valid")return;var left=Math.max(0,SIGLIFE-(Date.now()-DS.t0));arcTo(left/SIGLIFE,0);setTimeout(function(){if(DS.phase==="valid")arcTo(0,Math.max(0,SIGLIFE-(Date.now()-DS.t0)))},40)}
+function resetSig(){clearTimeout(DS.scT);DS.phase="idle";DS.sig=null;DS.scan=0;arcTo(0,0);if(sigRestore()){paintSig();arcResume();return}paintSig()}
 function loop(){if(DS.phase==="valid"&&Date.now()-DS.t0>=23000){DS.phase="invalid";paintSig()}}
 function digXY(i,r){var a=(i*36-90)*Math.PI/180;return[100+r*Math.cos(a),100+r*Math.sin(a)]}
 function sigSvg(){var n='',i,q;for(i=0;i<10;i++){q=digXY(i,88);n+='<text id="dg'+i+'" x="'+q[0].toFixed(1)+'" y="'+q[1].toFixed(1)+'" text-anchor="middle" dominant-baseline="central" font-size="6.6" font-weight="800" fill="#9fb0ff">'+i+'</text>';
@@ -292,7 +314,7 @@ function midHtml(ph,s,col){var big=function(v,sz){return '<div class="dv" style=
 if(ph==="scan"){var c=DS.res.length?fmtVal(DS.tab,DS.res[DS.res.length-1]):"";return '<div class="dl">ANALYSING</div><div class="dv" style="font-size:'+(c.length>2?'1.9rem':'4.6rem')+';opacity:.72">'+(c||'<span class="dots"><i></i><i></i><i></i></span>')+'</div><div class="dl">READING '+WIN[Math.min(DS.scan,6)]+' TICKS</div>'}
 if(s)return '<div class="dl">'+s.l+'</div>'+big(s.v,s.v.length>2?'2.1rem':(s.sc!==null?'5.2rem':'6.2rem'))+(s.sc!==null?'<div class="dp" style="color:'+col+';line-height:1.1;font-size:'+(s.go?'1.8rem':'1.1rem')+'">'+(s.go?'TRADE NOW':'SIGNAL NOT<br>STRONG')+'</div>':'<div class="dp" style="color:'+col+'">'+s.p.toFixed(1)+'%</div>');
 return '<div class="dl">READY</div>'+big('SCAN','2.4rem')+'<div class="dl">PRESS THE BUTTON</div>'}
-function paintSig(){var e=document.getElementById("dsig");if(!e)return;if(!document.getElementById("dsvg")){e.innerHTML=sigSvg();DS.mh="";arcTo(DS.phase==="scan"?DS.scan/7:0,0);paintDigits()}
+function paintSig(){var e=document.getElementById("dsig");if(!e)return;if(!document.getElementById("dsvg")){e.innerHTML=sigSvg();DS.mh="";arcTo(DS.phase==="scan"?DS.scan/7:0,0);paintDigits();if(DS.phase==="valid")arcResume()}
 var ph=DS.phase,s=DS.sig,col=ph==="valid"?"#22d3a6":ph==="invalid"?"#ef4444":ph==="scan"?"#60a5fa":"#6b7bb8",g=function(i){return document.getElementById(i)};if(ph==="valid"&&s&&s.go===false)col="#fbbf24";
 var svg=g("dsvg");svg.style.color=col;svg.setAttribute("class","ring"+(ph==="valid"?" v":(ph==="idle"?" i":"")));
 g("dtr").setAttribute("opacity",ph==="idle"?".6":ph==="invalid"?".3":".2");g("dsw").setAttribute("opacity",ph==="scan"?"1":"0");g("didl").setAttribute("opacity",ph==="idle"?".16":"0");
@@ -315,11 +337,11 @@ function B(on,l,fn){return '<button class="btn'+(on?'':' g')+'" style="padding:8
 if(DS.tab==="md")h=B(DS.mdSide==="matches","Matches","setMd(\'matches\')")+B(DS.mdSide==="differs","Differs","setMd(\'differs\')");
 else if(DS.tab==="ou"){h=B(DS.ou.side==="over","Over","setOu(\'over\')")+B(DS.ou.side==="under","Under","setOu(\'under\')")+'<span class="note" style="flex-basis:100%;color:var(--mu)">Choose your '+DS.ou.side+' digit</span><div style="flex-basis:100%;display:flex;gap:6px;flex-wrap:wrap">';var lo=DS.ou.side==="over"?0:1,hi=DS.ou.side==="over"?8:9;for(var i=lo;i<=hi;i++)h+=B(DS.ou.b===i,i,"setB("+i+")");h+='</div>'}
 e.innerHTML=h;e.style.display=h?"flex":"none"}
-function setTab(t){DS.tab=t;paintTabs();paintOpt();resetSig()}
-function setMd(v){DS.mdSide=v;paintOpt();resetSig()}
-function setOu(v){DS.ou.side=v;if(v==="over"&&DS.ou.b>8)DS.ou.b=8;if(v==="under"&&DS.ou.b<1)DS.ou.b=1;paintOpt();resetSig()}
-function setB(i){DS.ou.b=i;paintOpt();resetSig()}
-function setMk(m){DS.mk=m;connect()}
+function setTab(t){DS.tab=t;selSave();paintTabs();paintOpt();resetSig()}
+function setMd(v){DS.mdSide=v;selSave();paintOpt();resetSig()}
+function setOu(v){DS.ou.side=v;if(v==="over"&&DS.ou.b>8)DS.ou.b=8;if(v==="under"&&DS.ou.b<1)DS.ou.b=1;selSave();paintOpt();resetSig()}
+function setB(i){DS.ou.b=i;selSave();paintOpt();resetSig()}
+function setMk(m){DS.mk=m;selSave();connect()}
 function setPlan(p){S.plan=p;DS.tab=ACC[p][0];paintTabs();paintOpt();resetSig()}
 function backDash(){go(S.status==="pending"?"wait":"home")}
 function acctHTML(){var A=S.accts;if(!Array.isArray(A)||!A.length)return "";return A.map(function(a){return '<b translate="no">'+esc(a.id)+'</b> ('+(a.type==="demo"?"demo":"real")+')'}).join(", ")}
@@ -345,9 +367,9 @@ w.onerror=function(){if(!got)next("connection")};
 w.onclose=function(){if(!got)return next("closed");if(S.view==="dash")setTimeout(function(){if(S.view==="dash"&&DS.ws===w)connect(i)},2000)};
 DS.to=setTimeout(function(){next("timeout")},6000)}
 function stopDash(){clearInterval(DS.iv);clearInterval(DS.sim);clearInterval(DS.scT);clearTimeout(DS.to);killWs()}
-function startDash(){var A=ACC[S.plan||"matches"];if(!DS.tab||A.indexOf(DS.tab)<0)DS.tab=A[0];paintTabs();paintOpt();clearInterval(DS.iv);DS.iv=setInterval(loop,250);connect()}
+function startDash(){selLoad();var A=ACC[S.plan||"matches"];if(!DS.tab||A.indexOf(DS.tab)<0)DS.tab=A[0];paintTabs();paintOpt();clearInterval(DS.iv);DS.iv=setInterval(loop,250);connect()}
 function mopt(m){return '<option value="'+m[0]+'"'+(DS.mk===m[0]?' selected':'')+'>'+m[1]+'</option>'}
-V.dash=function(){return '<div style="margin-bottom:14px"><button class="btn g" onclick="backDash()">&larr; Back</button></div>'+welcome()+'<h2>Signal dashboard</h2>'+'<select onchange="setMk(this.value)"><optgroup label="Volatility Indices">'+MK.filter(function(m){return m[3]===2}).map(mopt).join('')+'</optgroup><optgroup label="Volatility Indices (1s)">'+MK.filter(function(m){return m[3]===1}).map(mopt).join('')+'</optgroup></select><div class="tabs" id="dtabs" style="flex-wrap:wrap"></div><div id="dopt"></div><div class="card" style="text-align:center"><div id="dsig"></div><div id="dinfo"></div><button class="btn scan" id="dscan" onclick="startScan()">SCAN MARKET</button></div><div class="card" style="margin-top:14px"><b>Last-digit frequency (last 100 ticks)</b><div class="bars" id="dbars" style="margin-top:10px"></div><p id="dstrip" style="word-break:break-all;font-size:.85rem"></p></div><div class="ft">Analysis only. Digit outcomes are random and no signal guarantees profit. Trade responsibly.</div>'};
+V.dash=function(){selLoad();return '<div style="margin-bottom:14px"><button class="btn g" onclick="backDash()">&larr; Back</button></div>'+welcome()+'<h2>Signal dashboard</h2>'+'<select onchange="setMk(this.value)"><optgroup label="Volatility Indices">'+MK.filter(function(m){return m[3]===2}).map(mopt).join('')+'</optgroup><optgroup label="Volatility Indices (1s)">'+MK.filter(function(m){return m[3]===1}).map(mopt).join('')+'</optgroup></select><div class="tabs" id="dtabs" style="flex-wrap:wrap"></div><div id="dopt"></div><div class="card" style="text-align:center"><div id="dsig"></div><div id="dinfo"></div><button class="btn scan" id="dscan" onclick="startScan()">SCAN MARKET</button></div><div class="card" style="margin-top:14px"><b>Last-digit frequency (last 100 ticks)</b><div class="bars" id="dbars" style="margin-top:10px"></div><p id="dstrip" style="word-break:break-all;font-size:.85rem"></p></div><div class="ft">Analysis only. Digit outcomes are random and no signal guarantees profit. Trade responsibly.</div>'};
 
 var wt=null;
 function keyLnk(f,t,al){return '<p style="margin:10px 0 0;text-align:'+al+'"><a class="lnk" href="#" onclick="openKey(\''+f+'\');return false">'+t+'</a></p>'}
