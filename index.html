@@ -370,7 +370,7 @@ var CTZ={"Africa/Nairobi":"KES","Africa/Kampala":"UGX","Africa/Dar_es_Salaam":"T
 var CCC={KE:"KES",UG:"UGX",TZ:"TZS",RW:"RWF",NG:"NGN",GH:"GHS",ZA:"ZAR",ET:"ETB",EG:"EGP",ZM:"ZMW",IN:"INR",PK:"PKR",BD:"BDT",AE:"AED",SA:"SAR",PH:"PHP",ID:"IDR",MY:"MYR",SG:"SGD",TH:"THB",VN:"VND",JP:"JPY",KR:"KRW",CN:"CNY",HK:"HKD",GB:"GBP",US:"USD",CA:"CAD",AU:"AUD",NZ:"NZD",BR:"BRL",MX:"MXN",CO:"COP",TR:"TRY",RU:"RUB",DE:"EUR",FR:"EUR",ES:"EUR",IT:"EUR",NL:"EUR",PT:"EUR",IE:"EUR",BE:"EUR",AT:"EUR",FI:"EUR",GR:"EUR"};
 function detCur(){try{var z=Intl.DateTimeFormat().resolvedOptions().timeZone;if(CTZ[z])return CTZ[z]}catch(e){}
 try{var l=(navigator.languages&&navigator.languages[0])||navigator.language||"",m=l.match(/[-_]([A-Za-z]{2})$/);if(m&&CCC[m[1].toUpperCase()])return CCC[m[1].toUpperCase()]}catch(e){}return "USD"}
-function fxLoad(){try{var c=JSON.parse(localStorage.getItem("dpai_fx")||"null");if(c&&c.r&&c.r.KES>0)FX=c}catch(e){}}
+function fxLoad(){try{var c=JSON.parse(localStorage.getItem("dpai_fx")||"null");if(c&&c.r&&c.r.KES>0){c.d=/^\d{4}-\d{2}-\d{2}$/.test(c.d||"")?c.d:"";c.src=c.src==="er"?"er":"";FX=c}}catch(e){}}
 function fxRates(){return FX.r&&Date.now()-FX.t<7*864e5?FX.r:null}
 function curNow(){var r=fxRates(),c=S.cur||detCur();return r&&r[c]?c:"USD"}
 function fxFetch(force){if(!force&&FX.r&&Date.now()-FX.t<36e5)return;

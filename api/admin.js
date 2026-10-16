@@ -11,9 +11,7 @@ const crypto = require("crypto");
 const L = require("./_lib");
 
 function sameKey(given, real) {
-  const a = crypto.createHash("sha256").update(String(given)).digest();
-  const b = crypto.createHash("sha256").update(String(real)).digest();
-  return crypto.timingSafeEqual(a, b);
+  return L.safeEq(given, real);
 }
 
 // What the owner's panel sees: the key, but not the clients' device ids.
@@ -29,6 +27,7 @@ module.exports = async (req, res) => {
   // Fail closed: no key, a short key, or no database means the admin API stays off.
   if (real.length < 12 || !L.configured()) return L.send(res, 503, { error: "not_configured" });
   if (req.method !== "GET" && req.method !== "POST") return L.send(res, 405, { error: "method" });
+  if (!L.sameOrigin(req) || L.tooBig(req)) return L.send(res, 403, { error: "origin" });
 
   try {
     const failKey = "dp:rl:adm:" + L.ip(req);

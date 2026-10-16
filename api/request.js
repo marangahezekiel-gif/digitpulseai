@@ -5,6 +5,7 @@ const L = require("./_lib");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return L.send(res, 405, { error: "method" });
+  if (!L.sameOrigin(req) || L.tooBig(req)) return L.send(res, 403, { error: "origin" });
   if (!L.configured()) return L.send(res, 503, { error: "not_configured" });
   try {
     const b = L.body(req);

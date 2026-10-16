@@ -1,0 +1,5 @@
+# these are for the owner only; they should not be served on the public site
+README.md
+ADMIN_SETUP.md
+SECURITY.md
+.gitignore

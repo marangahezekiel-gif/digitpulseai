@@ -14,6 +14,12 @@ function enabled() {
   return !!(E.MPESA_CONSUMER_KEY && E.MPESA_CONSUMER_SECRET && E.MPESA_SHORTCODE && E.MPESA_PASSKEY && E.MPESA_CALLBACK_SECRET);
 }
 
+// Where Safaricom sends its answer. Set SITE_URL to change it (for a staging site); no trailing slash.
+function callbackBase() {
+  const u = String(E.SITE_URL || "https://digitpulseai.site").replace(/\/+$/, "");
+  return /^https:\/\/[a-z0-9.-]+(:[0-9]+)?$/i.test(u) ? u : "https://digitpulseai.site";
+}
+
 async function token() {
   const r = await fetch(base() + "/oauth/v1/generate?grant_type=client_credentials", {
     headers: { Authorization: "Basic " + Buffer.from(E.MPESA_CONSUMER_KEY + ":" + E.MPESA_CONSUMER_SECRET).toString("base64") },
@@ -91,4 +97,4 @@ async function kesRate() {
   return 0;
 }
 
-module.exports = { enabled, push, query, phone, kesRate };
+module.exports = { callbackBase, enabled, push, query, phone, kesRate };

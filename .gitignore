@@ -1,0 +1,10 @@
+# secrets and local files must never be committed
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+node_modules/
+.vercel/
+.DS_Store
+*.log

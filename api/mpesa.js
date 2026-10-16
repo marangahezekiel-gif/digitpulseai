@@ -7,9 +7,13 @@ const M = require("./_mpesa");
 const PRICE = { matches: 150, rfeo: 100, ou: 80 };
 
 module.exports = async (req, res) => {
-  if (req.method === "GET") return L.send(res, 200, { enabled: M.enabled() && L.configured() });
+  if (req.method === "GET") {
+    if (L.configured() && (await L.hit("dp:rl:stkg:" + L.ip(req), 600).catch(() => 0)) > 120) return L.send(res, 429, { error: "rate" });
+    return L.send(res, 200, { enabled: M.enabled() && L.configured() });
+  }
   if (req.method !== "POST") return L.send(res, 405, { error: "method" });
   if (!M.enabled() || !L.configured()) return L.send(res, 503, { error: "not_configured" });
+  if (!L.sameOrigin(req) || L.tooBig(req)) return L.send(res, 403, { error: "origin" });
   try {
     const b = L.body(req);
     const ph = M.phone(b.phone);
@@ -29,8 +33,9 @@ module.exports = async (req, res) => {
     const usd = promo && promo.plan === b.plan ? promo.price : PRICE[b.plan];
     const amount = Math.ceil(usd * rate);
 
-    const host = String(req.headers["x-forwarded-host"] || req.headers.host || "").replace(/[^a-z0-9.:-]/gi, "");
-    const cb = "https://" + host + "/api/mpesa-callback?s=" + encodeURIComponent(process.env.MPESA_CALLBACK_SECRET);
+    // The callback address is fixed on the server. It carries a secret, so it must never be built from
+    // anything a visitor can send (a forged Host header could otherwise route the secret to another site).
+    const cb = M.callbackBase() + "/api/mpesa-callback?s=" + encodeURIComponent(process.env.MPESA_CALLBACK_SECRET);
     const r = await M.push(amount, ph, cb);
     const ck = r.j && r.j.CheckoutRequestID;
     if (!r.ok || String(r.j.ResponseCode) !== "0" || !ck) return L.send(res, 502, { error: "push_failed" });

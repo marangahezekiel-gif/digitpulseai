@@ -12,6 +12,7 @@ const SITE = "https://digitpulseai.site/";
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return L.send(res, 405, { error: "method" });
+  if (!L.sameOrigin(req) || L.tooBig(req)) return L.send(res, 403, { error: "origin" });
   try {
     const b = L.body(req);
     const code = String(b.code || "");

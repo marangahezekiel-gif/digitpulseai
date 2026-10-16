@@ -12,9 +12,17 @@ function ok(res) {
 module.exports = async (req, res) => {
   if (req.method !== "POST") return L.send(res, 405, { error: "method" });
   if (!M.enabled() || !L.configured()) return L.send(res, 503, { error: "not_configured" });
+  if (L.tooBig(req)) return L.send(res, 413, { error: "size" });
+  {
+    const [bad] = await L.redis([["GET", "dp:rl:cbbad:" + L.ip(req)]]).catch(() => [0]);
+    if (Number(bad || 0) >= 20) return L.send(res, 429, { error: "locked" });
+  }
   try {
-    const q = String(req.query && req.query.s || new URL(req.url, "http://x").searchParams.get("s") || "");
-    if (q !== process.env.MPESA_CALLBACK_SECRET) return L.send(res, 403, { error: "forbidden" });
+    const q = String((req.query && req.query.s) || new URL(req.url, "http://x").searchParams.get("s") || "");
+    if (!L.safeEq(q, process.env.MPESA_CALLBACK_SECRET)) {
+      await L.hit("dp:rl:cbbad:" + L.ip(req), 900); // guessing the secret is limited
+      return L.send(res, 403, { error: "forbidden" });
+    }
 
     const cb = (L.body(req).Body || {}).stkCallback || {};
     const ck = String(cb.CheckoutRequestID || "");
