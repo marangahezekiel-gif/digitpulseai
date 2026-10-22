@@ -73,24 +73,41 @@ input,textarea,select{width:100%;background:var(--bg);color:var(--tx);border:1px
 details{border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin:8px 0;background:var(--card)}summary{cursor:pointer;font-weight:700}details p{margin:8px 0 0}
 .wa{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));background:#25d366;color:#04230f;font-weight:800;font-size:.75rem;border-radius:99px;padding:7px 12px;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.3);z-index:9}
 
-#dsig{position:relative;width:min(100%,380px);margin:6px auto 0}
-.card:has(#dsig){padding-inline:10px}.ring{width:100%;display:block;transition:filter .3s}
-.mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;transition:opacity .3s}
-.dl{font-size:.7rem;color:#9fb0ff;letter-spacing:2px;font-weight:700}.dv{font-weight:900;line-height:1.02;text-shadow:0 0 24px var(--c),0 4px 0 rgba(0,0,0,.55)}.dp{font-size:1.9rem;font-weight:900;letter-spacing:1px;text-shadow:0 0 14px var(--c)}
-.vb{display:inline-block;padding:7px 18px;border-radius:99px;font-weight:900;margin-top:14px;font-size:.85rem;letter-spacing:1px}
-.ring{color:#6b7bb8;transition:color .7s ease;filter:drop-shadow(0 0 14px currentColor)}
-.ring.i{animation:breathe 5s ease-in-out infinite}.ring.v{animation:glow 1.9s ease-in-out infinite}
-@keyframes breathe{50%{filter:drop-shadow(0 0 22px currentColor)}}@keyframes glow{50%{filter:drop-shadow(0 0 28px currentColor)}}
-#dsvg *{transition:opacity .6s ease}#dsvg text{transition:font-size .45s ease,opacity .45s ease,fill .45s ease}
-.swp{transform-origin:100px 100px;animation:spin 1.7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
-.idl{transform-origin:100px 100px;animation:spin 14s linear infinite}
-.rip{transform-origin:100px 100px;animation:rip 1s ease-out both}@keyframes rip{from{transform:scale(1);opacity:.75}to{transform:scale(1.3);opacity:0}}
-.mi{display:flex;flex-direction:column;align-items:center;justify-content:center}
-.land{animation:land .65s cubic-bezier(.2,.8,.3,1) both}@keyframes land{0%{opacity:0;transform:scale(1.4);filter:blur(7px)}55%{opacity:1;transform:scale(.96);filter:blur(0)}100%{transform:scale(1)}}
-.fade{animation:fd .4s ease-out both}@keyframes fd{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-.dots i{display:inline-block;width:.45rem;height:.45rem;margin:0 .18rem;border-radius:50%;background:#9fb0ff;animation:blink 1.1s ease-in-out infinite}.dots i:nth-child(2){animation-delay:.18s}.dots i:nth-child(3){animation-delay:.36s}@keyframes blink{0%,100%{opacity:.2}50%{opacity:1}}
-.scan{width:100%;max-width:340px;margin-top:14px;padding:16px;font-size:1.1rem;letter-spacing:2px;text-transform:uppercase;border-radius:14px;box-shadow:0 8px 22px color-mix(in srgb,var(--ac2) 45%,transparent)}
-#dopt{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px;align-items:center}
+/* signal board */
+body.dxon .w{max-width:none}
+body.dxon{color-scheme:dark;--bg:#0b1020;--card:#141b34;--bd:#263056;--tx:#e8ecff;--mu:#9aa6d6;--ac:#22d3a6;--ac2:#6366f1;--wr:#fbbf24}
+.dxr{display:block}.dxt0{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}.dxt0 h2{margin:0;font-size:1.3rem;flex:1 1 auto}
+.dxb2{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:9px 14px;font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;min-height:40px}
+.dxb2.on{background:var(--ac);border-color:var(--ac);color:#04251d}.dxb2:disabled{opacity:.45;cursor:not-allowed}
+.dxseg{display:flex;gap:6px;flex-wrap:wrap}.dxrow{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px;align-items:center}
+.dxsel{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:9px 10px;font:inherit;min-height:40px;max-width:100%}
+.dxn{font-size:.8rem;color:var(--mu)}
+.dxp{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:99px;font-weight:800;font-size:.85rem;border:1px solid var(--bd);background:var(--card)}
+.dxp i{width:10px;height:10px;border-radius:50%;background:var(--wr)}.dxp.ok i{background:#22c55e;box-shadow:0 0 8px #22c55e}.dxp.bad i{background:#ef4444}.dxp.wait i{animation:dxb 1s ease-in-out infinite}
+@keyframes dxb{50%{opacity:.25}}
+.dxm0{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px 14px;margin:6px 0 14px}
+.dxmh{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.dxmh b{flex:1 1 auto}.dxmh label{display:flex;gap:8px;align-items:center;font-size:.85rem;color:var(--mu)}
+.dxmr{display:flex;gap:14px;align-items:center;margin-top:10px;flex-wrap:wrap;min-height:64px}
+.mpl{display:flex;align-items:center;gap:10px;min-width:150px;min-height:56px;opacity:0}.mpl:empty{display:none}.mpl b{font-size:2.8rem;line-height:1;color:var(--ac);font-weight:900}.mpl span{font-size:.85rem;color:var(--mu)}
+.mpl.on{opacity:1;animation:dxin .3s ease-out}.mpl.out{opacity:0;transform:scale(.9);transition:opacity .7s ease,transform .7s ease}
+@keyframes dxin{from{opacity:0;transform:scale(.8)}}
+.mpx{display:flex;gap:8px;flex-wrap:wrap;flex:1 1 200px}.mc{background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid var(--bd);border-radius:99px;padding:4px 12px;font-size:.8rem}.mc b{color:var(--ac);font-size:1rem}.mc i{color:var(--mu);font-style:normal}.mn{color:var(--mu);font-size:.82rem}
+.dxg{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))}.dxg.one{grid-template-columns:1fr}
+.dxc{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:16px;text-align:center;display:flex;flex-direction:column;gap:6px;min-width:0;transition:border-color .3s,box-shadow .3s}
+.dxc[data-ph=ready]{border-color:var(--ac);box-shadow:0 0 22px color-mix(in srgb,var(--ac) 30%,transparent)}
+.dxh{display:flex;justify-content:space-between;align-items:center;gap:8px}.dxh b{font-size:.95rem}.dxs{width:9px;height:9px;border-radius:50%;background:#ef4444}.dxc[data-live="1"] .dxs{background:#22c55e}
+.dxd{font-size:clamp(4rem,14vw,6rem);font-weight:900;line-height:1.05;color:var(--tx);font-variant-numeric:tabular-nums}.dxd.sm{font-size:clamp(2rem,8vw,3rem);padding:.7rem 0}.dxd.dim{opacity:.5}
+.dxc[data-ph=ready] .dxd{color:var(--ac)}
+.dxt{font-weight:800;font-size:.95rem;color:var(--mu)}.dxc[data-ph=ready] .dxt{color:var(--ac)}
+.dxb{height:4px;background:var(--bd);border-radius:4px;overflow:hidden}.dxb i{display:block;height:100%;width:0;background:var(--ac)}
+.dxk{display:flex;justify-content:space-between;font-size:.85rem;color:var(--mu)}.dxk b{color:var(--tx)}
+.dxf{height:6px;background:var(--bd);border-radius:6px;overflow:hidden}.dxf i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ac2),var(--ac));transition:width .5s}
+.dxy{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:4px}.dxy i{font-style:normal;min-width:24px;padding:2px 0;border-radius:6px;background:color-mix(in srgb,var(--tx) 8%,transparent);font-weight:700;font-size:.9rem}.dxy i.n{outline:1px solid var(--ac2)}.dxy i.m{background:var(--ac);color:#04251d}
+.dxl{font-size:.78rem;color:var(--mu)}
+.dxc.big{padding:clamp(16px,4vw,36px)}.dxc.big .dxd{font-size:clamp(7rem,30vw,16rem)}.dxc.big .dxd.sm{font-size:clamp(3rem,14vw,6rem)}.dxc.big .dxt{font-size:1.4rem}.dxc.big .dxy i{min-width:30px;font-size:1.1rem}
+.dxq{margin-top:12px;text-align:left}.dxq .bars{margin-top:10px}
+.dxw{margin-bottom:12px;padding:10px 14px;border:1px solid var(--ac);border-radius:12px;background:var(--card);font-size:.9rem}
+.dxf0{text-align:center;font-size:.75rem;color:var(--mu);margin-top:24px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .lnk{color:var(--ac);text-decoration:underline;font-size:.8rem;cursor:pointer;display:inline-block;padding:6px 2px}
 .plan.sel{box-shadow:0 0 0 1px var(--ac),0 8px 24px color-mix(in srgb,var(--ac) 25%,transparent)}
@@ -248,128 +265,208 @@ document.querySelectorAll("input,textarea").forEach(function(e){if(D[e.placehold
 
 
 var PREVIEW=false; /* public site: preview mode is off and has no buttons */
-var MK=[["R_10","Volatility 10 Index",3,2],["R_25","Volatility 25 Index",3,2],["R_50","Volatility 50 Index",4,2],["R_75","Volatility 75 Index",4,2],["R_100","Volatility 100 Index",2,2],["1HZ10V","Volatility 10 (1s) Index",2,1],["1HZ15V","Volatility 15 (1s) Index",3,1],["1HZ25V","Volatility 25 (1s) Index",2,1],["1HZ30V","Volatility 30 (1s) Index",3,1],["1HZ50V","Volatility 50 (1s) Index",2,1],["1HZ75V","Volatility 75 (1s) Index",2,1],["1HZ90V","Volatility 90 (1s) Index",3,1],["1HZ100V","Volatility 100 (1s) Index",2,1]];
+/* ===== Live signal board =====
+   One shared market-data connection feeds every card. Each card analyses its own market on its own timer.
+   The connection reconnects by itself (growing waits), is checked every 15 seconds, and is re-checked the
+   moment the page becomes visible again. Data and the last signal stay on screen while it reconnects. */
+var MK=[["1HZ10V","Volatility 10 (1s)",2,1],["1HZ15V","Volatility 15 (1s)",3,1],["1HZ25V","Volatility 25 (1s)",2,1],["1HZ30V","Volatility 30 (1s)",3,1],["1HZ50V","Volatility 50 (1s)",2,1],["1HZ75V","Volatility 75 (1s)",2,1],["1HZ90V","Volatility 90 (1s)",3,1],["1HZ100V","Volatility 100 (1s)",2,1],["1HZ150V","Volatility 150 (1s)",2,1],["1HZ250V","Volatility 250 (1s)",2,1],["R_10","Volatility 10",3,2],["R_25","Volatility 25",3,2],["R_50","Volatility 50",4,2],["R_75","Volatility 75",4,2],["R_100","Volatility 100",2,2]];
 var TABS=[["md","Matches / Differs"],["rf","Rise / Fall"],["eo","Even / Odd"],["ou","Over / Under"]];
 var ACC={matches:["md","rf","eo","ou"],rfeo:["rf","eo","ou"],ou:["ou"]};
 var WIN=[20,30,40,50,60,80,100];
-var GO=80; /* Matches: strength score at or above this = TRADE NOW, below = SIGNAL NOT STRONG */
-var DS={q:[],mk:"1HZ10V",tab:null,mdSide:"differs",ou:{side:"over",b:4},phase:"idle",scan:0,res:[],sig:null,t0:0,src:"",ws:null,iv:null,sim:null,to:null,scT:null,pip:2};
-function mk(){return MK.filter(function(m){return m[0]===DS.mk})[0]}
-function digs(){return DS.q.map(function(v){var t=v.toFixed(DS.pip||mk()[2]);return +t.charAt(t.length-1)})}
-function stats(w){var d=digs().slice(-w),c=[0,0,0,0,0,0,0,0,0,0];d.forEach(function(x){c[x]++});return{n:d.length||1,c:c}}
-function rfc(w){var q=DS.q.slice(-(w+1)),u=0,f=0;for(var i=1;i<q.length;i++){if(q[i]>q[i-1])u++;else if(q[i]<q[i-1])f++}return[u,f]}
-function pick(t,w){var a=stats(w),c=a.c,n=a.n;
-if(t==="md")return DS.mdSide==="matches"?c.indexOf(Math.max.apply(null,c)):c.indexOf(Math.min.apply(null,c));
-if(t==="rf"){var r=rfc(w);return r[0]>=r[1]?"RISE":"FALL"}
-if(t==="eo"){var e=c[0]+c[2]+c[4]+c[6]+c[8];return e>=n-e?"EVEN":"ODD"}
-return DS.ou.side+DS.ou.b}
-function pct(t,k,w){var a=stats(w),c=a.c,n=a.n;
-if(t==="md")return DS.mdSide==="matches"?c[k]/n*100:100-c[k]/n*100;
-if(t==="rf"){var r=rfc(w),m=r[0]+r[1]||1;return(k==="RISE"?r[0]:r[1])/m*100}
-if(t==="eo"){var e=c[0]+c[2]+c[4]+c[6]+c[8];return(k==="EVEN"?e:n-e)/n*100}
-var o=0;for(var i=0;i<10;i++){if(DS.ou.side==="over"?i>DS.ou.b:i<DS.ou.b)o+=c[i]}return o/n*100}
-function expd(t){if(t==="md")return DS.mdSide==="matches"?10:90;if(t==="ou")return DS.ou.side==="over"?(9-DS.ou.b)*10:DS.ou.b*10;return 50}
-var CIRC=2*Math.PI*76,STEP=[.95,1.25,.85,1.4,1.05,1.3,1.5];
+var GO=80,SIGLIFE=23000; /* confidence at or above GO = Signal Ready; a ready signal stays for SIGLIFE ms */
+var DX={mode:"all",sym:"1HZ10V",tab:null,md:"matches",os:"over",ob:4,clr:10,ld:0};
+var CD={},MH=[],MX={live:null,at:0,t:null};
+var FD={ws:null,st:"idle",tries:0,epi:0,got:false,gen:0,last:0,sub:{},hb:null,rt:null,ct:null,pv:null};
+/* Deriv public market data (no login needed). New endpoint first, the older one as a fallback. */
+var WSU=["wss://api.derivws.com/trading/v1/options/ws/public","wss://ws.derivws.com/websockets/v3?app_id=1089"];
+function gid(i){return document.getElementById(i)}
+function mkOf(id){for(var i=0;i<MK.length;i++)if(MK[i][0]===id)return MK[i];return null}
 function fmtVal(t,x){return t==="rf"?x+(x==="RISE"?" ▲":" ▼"):t==="ou"?String(x).replace(/(over|under)/,function(m){return m.toUpperCase()+" "}):String(x)}
-function arcTo(f,ms){var a=document.getElementById("dpa");if(!a)return;a.style.transition=ms?"stroke-dashoffset "+ms+"ms linear":"none";a.style.strokeDashoffset=(CIRC*(1-f)).toFixed(1)}
-function finish(){var t=DS.tab,v={},k,best=null,bc=0;DS.res.forEach(function(x){v[x]=(v[x]||0)+1});for(k in v){if(v[k]>bc){bc=v[k];best=k}}
-var p=0;WIN.forEach(function(w){p+=pct(t,best,w)});p/=WIN.length;
-var lab={md:DS.mdSide==="matches"?"MATCHES DIGIT":"DIFFERS DIGIT",rf:"RISE / FALL",eo:"EVEN / ODD",ou:"OVER / UNDER"}[t];
-DS.sig={l:lab,v:fmtVal(t,best),raw:best,t:t,p:p,e:expd(t),sc:(t==="md"&&DS.mdSide==="matches")?Math.max(0,Math.min(100,Math.round((p-10)/10*100))):null};if(DS.sig.sc!==null)DS.sig.go=DS.sig.sc>=GO;DS.phase="valid";DS.t0=Date.now();DS.rip=1;arcTo(0,23000);sigSave()}
-function stepScan(){var k=DS.scan,dur=Math.round(STEP[k]*1000*(.8+Math.random()*.4));arcTo((k+1)/7,dur);
-DS.scT=setTimeout(function(){if(DS.phase!=="scan")return;DS.res.push(pick(DS.tab,WIN[k]));DS.scan=k+1;if(DS.scan>=7)finish();else stepScan();paintSig()},dur)}
-function startScan(){if(DS.phase==="scan"||DS.q.length<20||!DS.tab)return;clearTimeout(DS.scT);DS.phase="scan";DS.scan=0;DS.res=[];DS.sig=null;arcTo(0,0);paintSig();stepScan()}
-/* The last signal for each market / tab / option is kept on this device, so leaving the board and coming back shows the same signal (still counting down, or marked expired) instead of a blank board. */
-var SIGK="dpai_sig",SIGLIFE=23000;
-/* Also remember which market, tab and option was open, so a reload returns to the same board. */
-function selSave(){try{localStorage.setItem("dpai_sel",JSON.stringify({mk:DS.mk,tab:DS.tab,md:DS.mdSide,os:DS.ou.side,ob:DS.ou.b}))}catch(e){}}
-function selLoad(){if(DS.selDone)return;DS.selDone=1;try{var x=JSON.parse(localStorage.getItem("dpai_sel")||"null");if(!x||typeof x!=="object")return;
-if(typeof x.mk==="string"&&MK.some(function(m){return m[0]===x.mk}))DS.mk=x.mk;
-if(["md","rf","eo","ou"].indexOf(x.tab)>-1)DS.tab=x.tab;
-if(x.md==="matches"||x.md==="differs")DS.mdSide=x.md;
-if((x.os==="over"||x.os==="under")&&Number.isInteger(x.ob)&&x.ob>=0&&x.ob<=9){DS.ou.side=x.os;DS.ou.b=x.os==="over"?Math.min(x.ob,8):Math.max(x.ob,1)}}catch(e){}}
-function sigKey(){var t=DS.tab;return DS.mk+"|"+t+"|"+(t==="md"?DS.mdSide:t==="ou"?DS.ou.side+DS.ou.b:"")}
-function sigLoad(){try{var o=JSON.parse(localStorage.getItem(SIGK)||"{}");return o&&typeof o==="object"&&!Array.isArray(o)?o:{}}catch(e){return{}}}
-function sigSave(){try{var o=sigLoad(),now=Date.now(),k,ks;o[sigKey()]={sig:DS.sig,t0:DS.t0};
+
+/* ---- settings kept on this device ---- */
+function dxSave(){try{localStorage.setItem("dpai_dx",JSON.stringify({mode:DX.mode,sym:DX.sym,tab:DX.tab,md:DX.md,os:DX.os,ob:DX.ob,clr:DX.clr}))}catch(e){}}
+function dxLoad(){if(DX.ld)return;DX.ld=1;try{var x=JSON.parse(localStorage.getItem("dpai_dx")||"null");if(!x||typeof x!=="object")return;
+if(x.mode==="one"||x.mode==="all")DX.mode=x.mode;
+if(typeof x.sym==="string"&&mkOf(x.sym))DX.sym=x.sym;
+if(TABS.some(function(t){return t[0]===x.tab}))DX.tab=x.tab;
+if(x.md==="matches"||x.md==="differs")DX.md=x.md;
+if((x.os==="over"||x.os==="under")&&Number.isInteger(x.ob)&&x.ob>=0&&x.ob<=9){DX.os=x.os;DX.ob=x.os==="over"?Math.min(x.ob,8):Math.max(x.ob,1)}
+if([0,5,10,20,30,60].indexOf(x.clr)>-1)DX.clr=x.clr}catch(e){}}
+function dxPlan(){var A=ACC[S.plan]||ACC.matches;if(!DX.tab||A.indexOf(DX.tab)<0)DX.tab=A[0];return A}
+
+/* ---- analysis (one card = one market, its own data) ---- */
+function newCard(id){var m=mkOf(id);return{id:id,name:m[1],pip:m[2],q:[],d:[],ph:"load",sig:null,cand:null,blk:null,last:null,err:"",iv:null,tk:0}}
+function digOf(c,v){var t=v.toFixed(c.pip);return +t.charAt(t.length-1)}
+function cnt(c,w){var d=c.d.slice(-w),k=[0,0,0,0,0,0,0,0,0,0];d.forEach(function(x){k[x]++});return{n:d.length||1,c:k}}
+function rfc(c,w){var q=c.q.slice(-(w+1)),u=0,f=0;for(var i=1;i<q.length;i++){if(q[i]>q[i-1])u++;else if(q[i]<q[i-1])f++}return[u,f]}
+function expd(t){if(t==="md")return DX.md==="matches"?10:90;if(t==="ou")return DX.os==="over"?(9-DX.ob)*10:DX.ob*10;return 50}
+function pickA(c,t,w){var a=cnt(c,w),k=a.c,n=a.n;
+if(t==="md")return DX.md==="matches"?k.indexOf(Math.max.apply(null,k)):k.indexOf(Math.min.apply(null,k));
+if(t==="rf"){var r=rfc(c,w);return r[0]>=r[1]?"RISE":"FALL"}
+if(t==="eo"){var e=k[0]+k[2]+k[4]+k[6]+k[8];return e>=n-e?"EVEN":"ODD"}
+return DX.os+DX.ob}
+function pctA(c,t,x,w){var a=cnt(c,w),k=a.c,n=a.n;
+if(t==="md")return DX.md==="matches"?k[x]/n*100:100-k[x]/n*100;
+if(t==="rf"){var r=rfc(c,w),m=r[0]+r[1]||1;return(x==="RISE"?r[0]:r[1])/m*100}
+if(t==="eo"){var e=k[0]+k[2]+k[4]+k[6]+k[8];return(x==="EVEN"?e:n-e)/n*100}
+var o=0;for(var i=0;i<10;i++){if(DX.os==="over"?i>DX.ob:i<DX.ob)o+=k[i]}return o/n*100}
+/* Confidence: how far the recent pattern is from normal. 0 = as expected, 100 = as strong as it gets. It is not a win probability. */
+function evalCard(c){var t=DX.tab,v={},best=null,bc=0,p=0,e,D,k;if(c.d.length<20)return null;
+WIN.forEach(function(w){var x=pickA(c,t,w);v[x]=(v[x]||0)+1});
+for(k in v){if(v[k]>bc){bc=v[k];best=k}}
+if(t==="md"||t==="ou")best=String(best);
+WIN.forEach(function(w){p+=pctA(c,t,t==="md"?+best:best,w)});p/=WIN.length;
+e=expd(t);D=t==="md"?10:(t==="ou"?Math.min(25,100-e):25);
+return{t:t,raw:String(best),v:fmtVal(t,best),p:p,e:e,sc:Math.max(0,Math.min(100,Math.round((p-e)/D*100))),side:DX.md}}
+function optKey(){return DX.tab+"|"+(DX.tab==="md"?DX.md:DX.tab==="ou"?DX.os+DX.ob:"")}
+function ckey(c){return c.id+"|"+optKey()}
+
+/* ---- last signal per market, kept on this device ---- */
+function pcLoad(){try{var o=JSON.parse(localStorage.getItem("dpai_pred")||"{}");return o&&typeof o==="object"&&!Array.isArray(o)?o:{}}catch(e){return{}}}
+function pcSave(c){try{var o=pcLoad(),now=Date.now(),k,ks;o[ckey(c)]={sig:c.sig,t0:c.sig.t0};
 for(k in o){if(!o[k]||typeof o[k].t0!=="number"||now-o[k].t0>864e5)delete o[k]}
-ks=Object.keys(o).sort(function(a,b){return o[b].t0-o[a].t0});ks.slice(40).forEach(function(x){delete o[x]});
-localStorage.setItem(SIGK,JSON.stringify(o))}catch(e){}}
-function sigClean(x){if(!x||typeof x!=="object")return null;var ok=/^[A-Za-z0-9 ▲▼.\/+-]{1,24}$/;
-if(["md","rf","eo","ou"].indexOf(x.t)<0||typeof x.l!=="string"||!/^[A-Z \/]{3,20}$/.test(x.l)||typeof x.v!=="string"||!ok.test(x.v)||typeof x.raw!=="string"||!/^[A-Za-z0-9]{1,12}$/.test(x.raw)||!isFinite(x.p)||!isFinite(x.e))return null;
-var sc=(x.sc===null||x.sc===undefined)?null:+x.sc;if(sc!==null&&!(sc>=0&&sc<=100))return null;
-var r={l:x.l,v:x.v,raw:x.raw,t:x.t,p:+x.p,e:+x.e,sc:sc};if(sc!==null)r.go=x.go===true;return r}
-function sigRestore(){var e=sigLoad()[sigKey()],now=Date.now(),c;if(!e||typeof e.t0!=="number"||e.t0>now+5000||now-e.t0>864e5)return false;c=sigClean(e.sig);if(!c)return false;
-DS.sig=c;DS.t0=e.t0;DS.phase=now-e.t0>=SIGLIFE?"invalid":"valid";return true}
-function arcResume(){if(DS.phase!=="valid")return;var left=Math.max(0,SIGLIFE-(Date.now()-DS.t0));arcTo(left/SIGLIFE,0);setTimeout(function(){if(DS.phase==="valid")arcTo(0,Math.max(0,SIGLIFE-(Date.now()-DS.t0)))},40)}
-function resetSig(){clearTimeout(DS.scT);DS.phase="idle";DS.sig=null;DS.scan=0;arcTo(0,0);if(sigRestore()){paintSig();arcResume();return}paintSig()}
-function loop(){if(DS.phase==="valid"&&Date.now()-DS.t0>=23000){DS.phase="invalid";paintSig()}}
-function digXY(i,r){var a=(i*36-90)*Math.PI/180;return[100+r*Math.cos(a),100+r*Math.sin(a)]}
-function sigSvg(){var n='',i,q;for(i=0;i<10;i++){q=digXY(i,88);n+='<text id="dg'+i+'" x="'+q[0].toFixed(1)+'" y="'+q[1].toFixed(1)+'" text-anchor="middle" dominant-baseline="central" font-size="6.6" font-weight="800" fill="#9fb0ff">'+i+'</text>';
-var a=digXY(i+.5,86),b=digXY(i+.5,91);n+='<line x1="'+a[0].toFixed(1)+'" y1="'+a[1].toFixed(1)+'" x2="'+b[0].toFixed(1)+'" y2="'+b[1].toFixed(1)+'" stroke="#56649f" stroke-width="1.2"/>'}
-var d='';for(i=0;i<7;i++)d+='<circle id="dd'+i+'" cx="'+(100+(i-3)*8)+'" cy="152" r="2.1" fill="#26305f"/>';
-return '<svg id="dsvg" viewBox="-10 -10 220 220" class="ring i"><defs><linearGradient id="bz" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f6ff"/><stop offset=".3" stop-color="#7d89b9"/><stop offset=".55" stop-color="#252d5c"/><stop offset=".8" stop-color="#a3aedb"/><stop offset="1" stop-color="#171d42"/></linearGradient><radialGradient id="ds" cx=".5" cy=".38" r=".75"><stop offset="0" stop-color="#2a3874"/><stop offset=".6" stop-color="#0c1236"/><stop offset="1" stop-color="#03050e"/></radialGradient><radialGradient id="gl" cx=".5" cy=".5" r=".5"><stop offset=".72" stop-color="currentColor" stop-opacity=".4"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></radialGradient><linearGradient id="sw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="currentColor" stop-opacity="0"/><stop offset="1" stop-color="currentColor" stop-opacity=".7"/></linearGradient></defs><circle cx="100" cy="100" r="108" fill="url(#gl)"/><circle cx="100" cy="100" r="98" fill="url(#bz)"/><circle cx="100" cy="100" r="93.5" fill="#070b1f"/>'+n+'<circle cx="100" cy="100" r="76" fill="none" stroke="#10173a" stroke-width="14"/><circle id="dtr" cx="100" cy="100" r="76" fill="none" stroke="currentColor" stroke-width="12" opacity=".6"/><circle id="dpa" cx="100" cy="100" r="76" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-dasharray="'+CIRC.toFixed(1)+'" stroke-dashoffset="'+CIRC.toFixed(1)+'" transform="rotate(-90 100 100)"/><circle id="drp" cx="100" cy="100" r="76" fill="none" stroke="currentColor" stroke-width="3" opacity="0"/><circle cx="100" cy="100" r="68.5" fill="none" stroke="currentColor" stroke-opacity=".55" stroke-width="1.5"/><circle cx="100" cy="100" r="67" fill="url(#ds)" stroke="#000" stroke-width="2"/><path id="didl" class="idl" d="M100 100 L100 36 A64 64 0 0 1 150 60 Z" fill="url(#sw)" opacity=".16"/><g id="dsw" opacity="0"><circle cx="100" cy="100" r="22" fill="none" stroke="currentColor" stroke-opacity=".3"/><circle cx="100" cy="100" r="44" fill="none" stroke="currentColor" stroke-opacity=".3"/><g class="swp"><path d="M100 100 L100 33 A67 67 0 0 1 167 100 Z" fill="url(#sw)"/></g></g>'+d+'<circle id="dsel" r="7.6" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0"/><path d="M45 78 A60 60 0 0 1 155 78" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="3" stroke-linecap="round"/><ellipse cx="100" cy="58" rx="44" ry="15" fill="#fff" opacity=".07"/></svg><div class="mid" id="dmid"></div>'}
-function paintDigits(){var A=DS.q.length>=5?stats(100):null,i,e,f,h;for(i=0;i<10;i++){e=document.getElementById("dg"+i);if(!e)return;f=A?A.c[i]/A.n:.1;h=Math.max(0,Math.min(1,(f-.08)/.1));
-e.setAttribute("font-size",(6.2+h*3.4).toFixed(2));e.style.opacity=(.5+h*.5).toFixed(2);e.setAttribute("fill",h>.45?"currentColor":"#9fb0ff")}}
-function midHtml(ph,s,col){var big=function(v,sz){return '<div class="dv" style="font-size:'+sz+'">'+v+'</div>'};
-if(ph==="scan"){var c=DS.res.length?fmtVal(DS.tab,DS.res[DS.res.length-1]):"";return '<div class="dl">ANALYSING</div><div class="dv" style="font-size:'+(c.length>2?'1.9rem':'4.6rem')+';opacity:.72">'+(c||'<span class="dots"><i></i><i></i><i></i></span>')+'</div><div class="dl">READING '+WIN[Math.min(DS.scan,6)]+' TICKS</div>'}
-if(s)return '<div class="dl">'+s.l+'</div>'+big(s.v,s.v.length>2?'2.1rem':(s.sc!==null?'5.2rem':'6.2rem'))+(s.sc!==null?'<div class="dp" style="color:'+col+';line-height:1.1;font-size:'+(s.go?'1.8rem':'1.1rem')+'">'+(s.go?'TRADE NOW':'SIGNAL NOT<br>STRONG')+'</div>':'<div class="dp" style="color:'+col+'">'+s.p.toFixed(1)+'%</div>');
-return '<div class="dl">READY</div>'+big('SCAN','2.4rem')+'<div class="dl">PRESS THE BUTTON</div>'}
-function paintSig(){var e=document.getElementById("dsig");if(!e)return;if(!document.getElementById("dsvg")){e.innerHTML=sigSvg();DS.mh="";arcTo(DS.phase==="scan"?DS.scan/7:0,0);paintDigits();if(DS.phase==="valid")arcResume()}
-var ph=DS.phase,s=DS.sig,col=ph==="valid"?"#22d3a6":ph==="invalid"?"#ef4444":ph==="scan"?"#60a5fa":"#6b7bb8",g=function(i){return document.getElementById(i)};if(ph==="valid"&&s&&s.go===false)col="#fbbf24";
-var svg=g("dsvg");svg.style.color=col;svg.setAttribute("class","ring"+(ph==="valid"?" v":(ph==="idle"?" i":"")));
-g("dtr").setAttribute("opacity",ph==="idle"?".6":ph==="invalid"?".3":".2");g("dsw").setAttribute("opacity",ph==="scan"?"1":"0");g("didl").setAttribute("opacity",ph==="idle"?".16":"0");
-for(var i=0;i<7;i++)g("dd"+i).setAttribute("fill",(ph==="scan"&&i<DS.scan)||ph==="valid"?col:"#26305f");
-var sel=g("dsel");if(ph==="valid"&&s&&s.t==="md"){var q=digXY(+s.raw,88);sel.setAttribute("cx",q[0].toFixed(1));sel.setAttribute("cy",q[1].toFixed(1));sel.setAttribute("opacity","1")}else sel.setAttribute("opacity","0");
-if(DS.rip){DS.rip=0;var r=g("drp");r.setAttribute("class","");void r.getBoundingClientRect();r.setAttribute("class","rip")}
-var m=g("dmid");m.style.setProperty("--c",col);m.style.opacity=ph==="invalid"?.4:1;
-var h=ph+"|"+midHtml(ph,s,col);if(h!==DS.mh){var was=DS.mh.split("|")[0];DS.mh=h;m.innerHTML='<div class="mi '+(ph==="valid"&&was!=="valid"?"land":"fade")+'">'+midHtml(ph,s,col)+'</div>'}
-var b=ph==="scan"?"SCANNING MARKET":ph==="valid"?(s&&s.sc!==null?(s.go?"TRADE NOW · SIGNAL VALID":"SIGNAL NOT STRONG"):"SIGNAL VALID"):ph==="invalid"?"SIGNAL EXPIRED — SCAN AGAIN":"READY TO SCAN";
-document.getElementById("dinfo").innerHTML='<div class="vb" style="background:'+col+';color:'+(ph==="valid"||ph==="scan"?"#06121a":"#fff")+'">'+b+'</div>'+((s&&ph!=="scan")?(s.sc!==null?'<p style="color:var(--tx)">Signal strength <b>'+s.sc+'/100</b> · digit '+s.v+' appeared in '+s.p.toFixed(1)+'% of recent ticks (normal: 10%)</p><p style="font-size:.8rem">Strength: 0 = as often as normal, 100 = twice as often or more. TRADE NOW appears at '+GO+' or above. It shows how unusual the digit is lately and is not a win probability.</p>':'<p style="color:var(--tx)">Observed '+s.p.toFixed(1)+'% · Expected '+s.e+'%</p>'):'')+(DS.src.indexOf("Live feed unavailable")===0?'<p class="note">'+DS.src+'</p>':'');
-var sb=document.getElementById("dscan");if(sb){sb.disabled=ph==="scan"||DS.q.length<20;sb.textContent=ph==="scan"?"SCANNING...":"⚡ SCAN MARKET"}}
-function feed(){paintDigits();var d=digs(),a=stats(100),m=Math.max.apply(null,a.c)||1,b=document.getElementById("dbars");
-if(b)b.innerHTML=a.c.map(function(v,i){return '<div class="bar"><div class="bt"><i style="height:'+Math.round(v/m*100)+'%"></i></div><span>'+i+'</span></div>'}).join('');
-var t=document.getElementById("dstrip");if(t)t.textContent="Last digits: "+d.slice(-15).join(" ");
-var sb=document.getElementById("dscan");if(sb&&DS.phase!=="scan")sb.disabled=DS.q.length<20}
-function paintTabs(){var e=document.getElementById("dtabs");if(!e)return;var A=ACC[S.plan||"matches"];
-e.innerHTML=TABS.map(function(t){var ok=A.indexOf(t[0])>-1;return '<button class="btn'+(DS.tab===t[0]?'':' g')+'" style="min-width:130px" '+(ok?'onclick="setTab(\''+t[0]+'\')"':'disabled')+'>'+(ok?'':'\uD83D\uDD12 ')+t[1]+'</button>'}).join('')}
-function paintOpt(){var e=document.getElementById("dopt");if(!e)return;var h="";
-function B(on,l,fn){return '<button class="btn'+(on?'':' g')+'" style="padding:8px 14px" onclick="'+fn+'">'+l+'</button>'}
-if(DS.tab==="md")h=B(DS.mdSide==="matches","Matches","setMd(\'matches\')")+B(DS.mdSide==="differs","Differs","setMd(\'differs\')");
-else if(DS.tab==="ou"){h=B(DS.ou.side==="over","Over","setOu(\'over\')")+B(DS.ou.side==="under","Under","setOu(\'under\')")+'<span class="note" style="flex-basis:100%;color:var(--mu)">Choose your '+DS.ou.side+' digit</span><div style="flex-basis:100%;display:flex;gap:6px;flex-wrap:wrap">';var lo=DS.ou.side==="over"?0:1,hi=DS.ou.side==="over"?8:9;for(var i=lo;i<=hi;i++)h+=B(DS.ou.b===i,i,"setB("+i+")");h+='</div>'}
-e.innerHTML=h;e.style.display=h?"flex":"none"}
-function setTab(t){DS.tab=t;selSave();paintTabs();paintOpt();resetSig()}
-function setMd(v){DS.mdSide=v;selSave();paintOpt();resetSig()}
-function setOu(v){DS.ou.side=v;if(v==="over"&&DS.ou.b>8)DS.ou.b=8;if(v==="under"&&DS.ou.b<1)DS.ou.b=1;selSave();paintOpt();resetSig()}
-function setB(i){DS.ou.b=i;selSave();paintOpt();resetSig()}
-function setMk(m){DS.mk=m;selSave();connect()}
-function setPlan(p){S.plan=p;DS.tab=ACC[p][0];paintTabs();paintOpt();resetSig()}
+ks=Object.keys(o).sort(function(a,b){return o[b].t0-o[a].t0});ks.slice(60).forEach(function(x){delete o[x]});
+localStorage.setItem("dpai_pred",JSON.stringify(o))}catch(e){}}
+function sigClean(x,t0){if(!x||typeof x!=="object")return null;
+if(["md","rf","eo","ou"].indexOf(x.t)<0||typeof x.v!=="string"||!/^[A-Za-z0-9 ▲▼]{1,24}$/.test(x.v)||typeof x.raw!=="string"||!/^[A-Za-z0-9]{1,12}$/.test(x.raw)||!isFinite(x.p)||!isFinite(x.e)||!isFinite(x.sc)||x.sc<0||x.sc>100)return null;
+return{t:x.t,raw:x.raw,v:x.v,p:+x.p,e:+x.e,sc:Math.round(+x.sc),side:x.side==="differs"?"differs":"matches",t0:t0}}
+function cacheFor(c){var e=pcLoad()[ckey(c)],now=Date.now();if(!e||typeof e.t0!=="number"||e.t0>now+5000||now-e.t0>864e5)return null;return sigClean(e.sig,e.t0)}
+function applyCache(c){c.sig=null;c.blk=null;c.last=null;c.cand=null;var s=cacheFor(c);
+if(s&&Date.now()-s.t0<SIGLIFE){c.sig=s;c.ph="ready"}else{c.ph=c.d.length<20?"load":"search";c.last=s}}
+
+/* ---- each card's own loop (once a second) ---- */
+function tickCard(c){var now=Date.now(),e;
+if(c.ph==="ready"&&now-c.sig.t0>=SIGLIFE){c.last=c.sig;c.blk=c.sig.raw+"|"+c.sig.t;c.sig=null;c.ph="search"}
+if(c.ph!=="ready"){
+ if(c.err||c.d.length<20){c.ph="load";c.cand=null}
+ else if(FD.st==="connected"||c.ph==="search"||c.ph==="load"){e=evalCard(c);c.cand=e;
+  if(e&&c.blk&&(e.sc<GO||e.raw+"|"+e.t!==c.blk))c.blk=null;
+  if(e&&FD.st==="connected"&&e.sc>=GO&&!c.blk){c.sig={t:e.t,raw:e.raw,v:e.v,p:e.p,e:e.e,sc:e.sc,side:e.side,t0:now};c.ph="ready";c.last=null;pcSave(c);barRun(c)}
+  else c.ph="search"}}
+paintCard(c)}
+function barRun(c){var b=gid("b-"+c.id);if(!b)return;var left=c.sig?Math.max(0,SIGLIFE-(Date.now()-c.sig.t0)):0;
+b.style.transition="none";b.style.width=(left/SIGLIFE*100).toFixed(1)+"%";void b.offsetWidth;if(left>0){b.style.transition="width "+left+"ms linear";b.style.width="0%"}}
+function onDigit(c,x){if(c.ph==="ready"&&c.sig&&c.sig.t==="md"&&c.sig.side==="matches"&&+c.sig.raw===x)addMatch(c,x)}
+
+/* ---- matched digits panel ---- */
+function addMatch(c,x){MH.unshift({id:c.id,name:c.name,digit:x,at:Date.now()});if(MH.length>5)MH.length=5;MX.live={name:c.name,digit:x};MX.at=Date.now();
+clearTimeout(MX.t);if(DX.clr>0)MX.t=setTimeout(paintMatches,DX.clr*1000+30);paintMatches()}
+function paintMatches(){var l=gid("mp-live"),h=gid("mp-list");if(!l||!h)return;var now=Date.now(),show=MX.live&&(DX.clr===0||now-MX.at<DX.clr*1000);
+if(show){l.className="mpl on";l.innerHTML="<b>"+MX.live.digit+"</b><span>"+esc(MX.live.name)+"</span>"}
+else if(l.className.indexOf("on")>-1){l.className="mpl out";setTimeout(function(){var q=gid("mp-live");if(q&&q.className==="mpl out"){q.className="mpl";q.innerHTML=""}},750)}
+h.innerHTML=MH.length?MH.map(function(m){return '<span class="mc"><b>'+m.digit+'</b> '+esc(m.name)+' <i>'+new Date(m.at).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"})+'</i></span>'}).join(""):'<span class="mn">No matches yet. A match is logged when the digit of a ready Matches signal comes up.</span>'}
+function dxClear(){MH=[];MX.live=null;clearTimeout(MX.t);paintMatches()}
+function dxClr(v){v=+v;if([0,5,10,20,30,60].indexOf(v)<0)return;DX.clr=v;dxSave();clearTimeout(MX.t);if(MX.live&&v>0){var left=v*1000-(Date.now()-MX.at);MX.t=setTimeout(paintMatches,Math.max(0,left)+30)}paintMatches()}
+
+/* ---- painting ---- */
+function chips(c,n,hit){return c.d.slice(-n).map(function(x,i,a){return '<i'+(hit!==null&&x===hit?' class="m"':(i===a.length-1?' class="n"':''))+'>'+x+'</i>'}).join("")}
+function ago(t0){var s=Math.max(0,Math.round((Date.now()-t0)/1000));return s<60?s+"s ago":s<3600?Math.round(s/60)+"m ago":Math.round(s/3600)+"h ago"}
+function paintCard(c){var r=gid("c-"+c.id);if(!r)return;var live=FD.st==="connected",ph=c.ph,s=c.sig,k=c.cand,txt,dig,conf,big=r.className.indexOf("big")>-1,e;
+if(c.err){txt="Unavailable";dig="—";conf=null;ph="load"}
+else if(ph==="load"){txt="Loading...";dig="—";conf=null}
+else if(ph==="search"){txt=live?"Searching for next entry...":"Reconnecting...";dig=k?k.v:"—";conf=k?k.sc:null}
+else{txt="Signal Ready";dig=s.v;conf=s.sc}
+r.setAttribute("data-ph",ph);r.setAttribute("data-live",live?"1":"0");
+e=gid("d-"+c.id);if(e){e.textContent=dig;e.className="dxd"+(dig.length>3?" sm":"")+(ph==="search"?" dim":"")}
+e=gid("t-"+c.id);if(e)e.textContent=txt;
+e=gid("k-"+c.id);if(e)e.textContent=conf===null?"–":conf+"%";
+e=gid("f-"+c.id);if(e)e.style.width=(conf===null?0:conf)+"%";
+e=gid("y-"+c.id);if(e)e.innerHTML=chips(c,big?30:14,ph==="ready"&&s&&s.t==="md"&&s.side==="matches"?+s.raw:null);
+e=gid("l-"+c.id);if(e)e.textContent=ph==="ready"?(s.t==="md"?(s.side==="matches"?"Matches":"Differs"):TABS.filter(function(t){return t[0]===s.t})[0][1])+" · valid for "+Math.max(0,Math.ceil((SIGLIFE-(Date.now()-s.t0))/1000))+"s":(c.last?"Last signal: "+c.last.v+" · "+c.last.sc+"% · "+ago(c.last.t0):"No signal yet");
+if(ph==="ready"){e=gid("b-"+c.id);if(e&&!e.style.transition)barRun(c)}else{e=gid("b-"+c.id);if(e){e.style.transition="none";e.style.width="0%"}}
+if(big){e=gid("fb-"+c.id);if(e){var a=cnt(c,100),m=Math.max.apply(null,a.c)||1;e.innerHTML=a.c.map(function(v,i){return '<div class="bar"><div class="bt"><i style="height:'+Math.round(v/m*100)+'%"></i></div><span>'+i+'</span></div>'}).join("")}}}
+function cardHTML(c,big){var i=c.id;return '<section class="dxc'+(big?' big':'')+'" id="c-'+i+'" data-ph="load" data-live="0" aria-label="'+esc(c.name)+'"><div class="dxh"><b>'+esc(c.name)+'</b><i class="dxs" title="Live data"></i></div>'
++'<div class="dxd" id="d-'+i+'" aria-live="polite">—</div>'
++'<div class="dxt" id="t-'+i+'">Loading...</div>'
++'<div class="dxb"><i id="b-'+i+'"></i></div>'
++'<div class="dxk"><span>Confidence</span><b id="k-'+i+'">–</b></div><div class="dxf"><i id="f-'+i+'"></i></div>'
++'<div class="dxy" id="y-'+i+'" aria-label="Recent last digits"></div><div class="dxl" id="l-'+i+'"></div>'
++(big?'<div class="dxq"><b>Last-digit frequency (last 100 ticks)</b><div class="bars" id="fb-'+i+'"></div></div>':'')+'</section>'}
+function dxCards(){var ids=DX.mode==="one"?[DX.sym]:MK.filter(function(m){return m[3]===1}).map(function(m){return m[0]});return ids}
+function ensureCard(id){var c=CD[id];if(!c){c=CD[id]=newCard(id);applyCache(c)}
+if(!c.iv){var d=Math.floor(Math.random()*400);c.iv=setInterval(function(){tickCard(c)},1000);c.dl=d}return c}
+function paintStrat(){var e=gid("dx-tabs");if(!e)return;var A=dxPlan(),h="",B=function(on,l,fn){return '<button class="dxb2'+(on?' on':'')+'" aria-pressed="'+on+'" onclick="'+fn+'">'+l+'</button>'};
+e.innerHTML=TABS.map(function(t){var ok=A.indexOf(t[0])>-1;return '<button class="dxb2'+(DX.tab===t[0]?' on':'')+'" '+(ok?'onclick="dxTab(\''+t[0]+'\')" aria-pressed="'+(DX.tab===t[0])+'"':'disabled')+'>'+(ok?'':'🔒 ')+t[1]+'</button>'}).join("");
+var o=gid("dx-opt");if(o){if(DX.tab==="md")h=B(DX.md==="matches","Matches","dxMd(\'matches\')")+B(DX.md==="differs","Differs","dxMd(\'differs\')");
+else if(DX.tab==="ou"){h=B(DX.os==="over","Over","dxOu(\'over\')")+B(DX.os==="under","Under","dxOu(\'under\')")+'<span class="dxn">Your '+DX.os+' digit</span>';var lo=DX.os==="over"?0:1,hi=DX.os==="over"?8:9;for(var i=lo;i<=hi;i++)h+=B(DX.ob===i,i,"dxB("+i+")")}
+o.innerHTML=h;o.style.display=h?"flex":"none"}
+var m=gid("dx-mode");if(m)m.innerHTML=B(DX.mode==="all","All 1s volatilities","dxMode(\'all\')")+B(DX.mode==="one","Single volatility","dxMode(\'one\')");
+var s=gid("dx-sym");if(s){s.style.display=DX.mode==="one"?"":"none";s.value=DX.sym}}
+function paintConn(){var e=gid("dx-conn");if(!e)return;var m={connected:["Connected","ok"],connecting:["Connecting...","wait"],reconnecting:["Reconnecting...","wait"],lost:["Connection Lost","bad"],idle:["Connecting...","wait"]}[FD.st]||["Connecting...","wait"];
+e.className="dxp "+m[1];e.querySelector("span").textContent=m[0];var r=gid("dx-retry");if(r)r.hidden=FD.st!=="lost"}
+function paintAll(){paintConn();Object.keys(CD).forEach(function(k){paintCard(CD[k])})}
+
+/* ---- mounting the board (the connection is not touched) ---- */
+function dxMount(){dxLoad();dxPlan();var g=gid("dxg");if(!g){return}
+var ids=dxCards(),big=DX.mode==="one";g.className="dxg"+(big?" one":"");
+g.innerHTML=ids.map(function(i){return cardHTML(ensureCard(i),big)}).join("");
+paintStrat();paintMatches();ids.forEach(function(i){var c=CD[i];paintCard(c);if(c.ph==="ready")barRun(c)});paintConn();
+fdStart();fdSubs()}
+function dxStop(){Object.keys(CD).forEach(function(k){clearInterval(CD[k].iv)});CD={};fdStop();document.body.classList.remove("dxon")}
+function dxApply(){Object.keys(CD).forEach(function(k){applyCache(CD[k])});dxSave();paintStrat();dxMount()}
+function dxTab(t){if((ACC[S.plan]||ACC.matches).indexOf(t)<0)return;DX.tab=t;dxApply()}
+function dxMd(v){DX.md=v;dxApply()}
+function dxOu(v){DX.os=v;if(v==="over"&&DX.ob>8)DX.ob=8;if(v==="under"&&DX.ob<1)DX.ob=1;dxApply()}
+function dxB(i){DX.ob=i;dxApply()}
+function dxMode(m){if(m!==DX.mode){DX.mode=m;dxSave();dxMount()}}
+function dxSym(s){if(mkOf(s)){DX.sym=s;dxSave();dxMount()}}
 function backDash(){go(S.status==="pending"?"wait":"home")}
+
+/* ---- the connection ---- */
+function setSt(s){if(FD.st===s)return;FD.st=s;paintAll();if(s==="connected")fdSubs()}
+function fdWant(){var w={};MK.forEach(function(m){if(m[3]===1)w[m[0]]=1});if(DX.mode==="one")w[DX.sym]=1;return w}
+function fdSend(o){var w=FD.ws;if(w&&w.readyState===1){try{w.send(JSON.stringify(o));return true}catch(e){}}return false}
+function fdSubs(){if(FD.st!=="connected")return;var W=fdWant(),k;for(k in W){if(!FD.sub[k]&&ensureCard(k)){FD.sub[k]=1;fdSend({ticks_history:k,adjust_start_time:1,count:100,end:"latest",style:"ticks",subscribe:1})}}}
+function fdKill(){clearTimeout(FD.ct);clearTimeout(FD.pv);var w=FD.ws;FD.ws=null;if(w){w.onopen=w.onmessage=w.onerror=w.onclose=null;try{w.close()}catch(e){}}}
+function fdOpen(){fdKill();clearTimeout(FD.rt);FD.rt=null;FD.gen++;var g=FD.gen,w;FD.got=false;FD.sub={};FD.last=Date.now();
+setSt(FD.tries?"reconnecting":"connecting");
+try{w=new WebSocket(WSU[FD.epi%WSU.length])}catch(e){return fdFail(g)}
+FD.ws=w;FD.ct=setTimeout(function(){if(FD.gen===g&&!FD.got)fdFail(g)},7000);
+w.onopen=function(){if(FD.gen!==g)return;/* subscriptions go out once the first answer arrives */fdSend({ping:1})};
+w.onmessage=function(m){if(FD.gen!==g)return;var d;try{d=JSON.parse(m.data)}catch(e){return}FD.last=Date.now();
+if(!FD.got){FD.got=true;FD.tries=0;clearTimeout(FD.ct);setSt("connected");fdSubs()}
+if(d.error){var s=d.echo_req&&d.echo_req.ticks_history;if(typeof s==="string"&&CD[s]&&d.error.code!=="AlreadySubscribed"){CD[s].err=String(d.error.code||"error");paintCard(CD[s])}return}
+if(d.msg_type==="history"&&d.history&&d.history.prices){var id=d.echo_req&&d.echo_req.ticks_history,c=typeof id==="string"?CD[id]:null;if(c)fdHist(c,d)}
+else if(d.msg_type==="tick"&&d.tick&&typeof d.tick.symbol==="string"&&CD[d.tick.symbol])fdTick(CD[d.tick.symbol],d.tick)};
+w.onerror=function(){};
+w.onclose=function(){fdFail(g)}}
+function fdFail(g){if(FD.gen!==g)return;var heard=FD.got;fdKill();if(!heard)FD.epi++;fdSchedule()}
+function fdSchedule(){clearTimeout(FD.rt);if(S.view!=="dash"){FD.rt=null;return}FD.tries++;
+var wait=Math.min(30000,1000*Math.pow(2,Math.min(FD.tries-1,5)))+Math.random()*500;
+setSt(FD.tries>=5?"lost":"reconnecting");FD.rt=setTimeout(function(){FD.rt=null;if(S.view==="dash")fdOpen()},wait)}
+function fdNow(){FD.tries=0;clearTimeout(FD.rt);FD.rt=null;fdOpen()}
+function fdHist(c,d){var p=d.history.prices.map(Number).filter(function(v){return isFinite(v)}),pip=+d.pip_size;if(p.length<2)return;
+c.q=p.slice(-120);if(pip>=0&&pip<=6&&Number.isInteger(pip))c.pip=pip;c.d=c.q.map(function(v){return digOf(c,v)});c.err="";
+if(c.ph==="load")c.ph="search";paintCard(c);tickSoon(c)}
+function tickSoon(c){setTimeout(function(){tickCard(c)},30)}
+function fdTick(c,t){var v=+t.quote;if(!isFinite(v))return;var pip=+t.pip_size;if(pip>=0&&pip<=6&&Number.isInteger(pip))c.pip=pip;
+c.q.push(v);if(c.q.length>120)c.q.shift();var x=digOf(c,v);c.d.push(x);if(c.d.length>120)c.d.shift();c.err="";onDigit(c,x);if(c.ph==="load"&&c.d.length>=20)tickSoon(c);
+var e=gid("y-"+c.id);if(e)e.innerHTML=chips(c,e.parentNode.className.indexOf("big")>-1?30:14,c.ph==="ready"&&c.sig&&c.sig.t==="md"&&c.sig.side==="matches"?+c.sig.raw:null);
+if(e&&e.parentNode.className.indexOf("big")>-1){var f=gid("fb-"+c.id);if(f){var a=cnt(c,100),m=Math.max.apply(null,a.c)||1;f.innerHTML=a.c.map(function(vv,i){return '<div class="bar"><div class="bt"><i style="height:'+Math.round(vv/m*100)+'%"></i></div><span>'+i+'</span></div>'}).join("")}}}
+function fdBeat(){if(S.view!=="dash")return;if(FD.ws&&FD.ws.readyState===1){if(Date.now()-FD.last>35000)fdFail(FD.gen);else fdSend({ping:1})}else if(!FD.rt)fdNow()}
+/* Back on the page (tab switch, phone unlocked, app reopened, network back): check the connection at once. */
+function fdResume(){if(S.view!=="dash")return;var w=FD.ws;
+if(!w||w.readyState!==1||Date.now()-FD.last>20000){fdNow();return}
+var t=Date.now();fdSend({ping:1});clearTimeout(FD.pv);FD.pv=setTimeout(function(){if(FD.last<t)fdNow()},4000)}
+function fdStart(){if(!FD.hb)FD.hb=setInterval(fdBeat,15000);if(!FD.ws&&!FD.rt)fdNow()}
+function fdStop(){clearInterval(FD.hb);FD.hb=null;clearTimeout(FD.rt);FD.rt=null;fdKill();FD.gen++;FD.st="idle";FD.tries=0;FD.sub={}}
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")fdResume()});
+window.addEventListener("pageshow",fdResume);window.addEventListener("online",fdResume);window.addEventListener("focus",fdResume);
+function dxRetry(){fdNow()}
+function symOpt(m){return '<option value="'+m[0]+'">'+m[1]+'</option>'}
+V.dash=function(){dxLoad();dxPlan();return '<div class="dxr"><header class="dxt0"><button class="dxb2" onclick="backDash()">&larr; Back</button><h2>Signal board</h2><div id="dx-mode" class="dxseg"></div>'
++'<select id="dx-sym" class="dxsel" aria-label="Volatility" onchange="dxSym(this.value)"><optgroup label="1-second volatilities">'+MK.filter(function(m){return m[3]===1}).map(symOpt).join('')+'</optgroup><optgroup label="Volatilities">'+MK.filter(function(m){return m[3]===2}).map(symOpt).join('')+'</optgroup></select>'
++'<div class="dxp wait" id="dx-conn" role="status"><i></i><span>Connecting...</span></div><button class="dxb2" id="dx-retry" hidden onclick="dxRetry()">Retry</button></header>'
++(S.account?'<div class="dxw" id="wlc">'+welcomeInner()+'</div>':'')
++'<div class="dxs0"><div id="dx-tabs" class="dxrow"></div><div id="dx-opt" class="dxrow"></div></div>'
++'<div class="dxm0"><div class="dxmh"><b>Matched digits</b><label>Auto-clear <select class="dxsel" aria-label="Auto-clear matched digit after" onchange="dxClr(this.value)">'+[[5,"5 seconds"],[10,"10 seconds"],[20,"20 seconds"],[30,"30 seconds"],[60,"60 seconds"],[0,"Never"]].map(function(o){return '<option value="'+o[0]+'"'+(DX.clr===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select></label><button class="dxb2" onclick="dxClear()">Clear History</button></div><div class="dxmr"><div class="mpl" id="mp-live" aria-live="polite"></div><div class="mpx" id="mp-list"></div></div></div>'
++'<div class="dxg" id="dxg"></div>'
++'<p class="dxf0">Confidence shows how unusual the recent digits are: 0% is normal, 100% is the strongest pattern. It is not a chance of winning. Analysis only. Digit outcomes are random and no signal guarantees profit. Trade responsibly.</p></div>'};
 function acctHTML(){var A=S.accts;if(!Array.isArray(A)||!A.length)return "";return A.map(function(a){return '<b translate="no">'+esc(a.id)+'</b> ('+(a.type==="demo"?"demo":"real")+')'}).join(", ")}
 function welcomeInner(){if(S.account==="key")return '<b>Welcome!</b><p style="margin:4px 0 0">'+(S.kmask?'Access key <b translate="no">'+esc(S.kmask)+'</b> is active.':'Your access key is active.')+'</p>';
 var a=acctHTML();return '<b>Welcome!</b>'+(a?'<p style="margin:4px 0 0">Account '+a+'</p>':'')}
 function welcome(){return S.account?'<div class="card" id="wlc" style="border-color:var(--ac);margin-bottom:14px">'+welcomeInner()+'</div>':''}
 function exch(code,v){jfetch("/api/deriv",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:code,verifier:v})}).then(function(x){if(!x.ok||!x.j.accounts||!x.j.accounts.length)return;S.accts=x.j.accounts.slice(0,6);save();var e=document.getElementById("wlc");if(e&&S.account==="deriv")e.innerHTML=welcomeInner()}).catch(function(){})}
-function killWs(){if(DS.ws){try{DS.ws.onclose=null;DS.ws.onerror=null;DS.ws.close()}catch(e){}DS.ws=null}}
-function sim(){if(!PREVIEW){killWs();clearTimeout(DS.to);clearInterval(DS.sim);DS.q=[];DS.src="Live feed unavailable"+(DS.why?" ("+DS.why+")":"")+". Check your connection and select the market again.";feed();paintSig();return}
-if(DS.sim&&DS.src.indexOf("Simulated")===0)return;killWs();clearTimeout(DS.to);clearInterval(DS.sim);DS.q=[];DS.pip=mk()[2];var p=1000;for(var i=0;i<100;i++){p+=(Math.random()-.5)*2;DS.q.push(p)}
-DS.src="Simulated data (live feed unavailable here)";feed();paintSig();DS.sim=setInterval(function(){DS.q.push(DS.q[DS.q.length-1]+(Math.random()-.5)*2);if(DS.q.length>120)DS.q.shift();feed()},mk()[3]*1000)}
-/* Deriv public market data (no login needed). New endpoint first, the older one as a fallback. */
-var WSU=["wss://api.derivws.com/trading/v1/options/ws/public","wss://ws.derivws.com/websockets/v3?app_id=1089"];
-function connect(i){i=typeof i==="number"?i:0;clearInterval(DS.sim);clearTimeout(DS.to);killWs();DS.q=[];DS.src="Connecting...";if(i===0)DS.why="";var got=false,dead=false,w;if(i===0)resetSig();feed();
-function next(why){if(dead||got)return;dead=true;clearTimeout(DS.to);DS.why=why||DS.why;if(i+1<WSU.length)return connect(i+1);sim()}
-try{w=new WebSocket(WSU[i])}catch(e){return next("blocked")}
-DS.ws=w;
-w.onopen=function(){w.send(JSON.stringify({ticks_history:DS.mk,adjust_start_time:1,count:100,end:"latest",style:"ticks",subscribe:1}))};
-w.onmessage=function(m){var d;try{d=JSON.parse(m.data)}catch(e){return}if(d.error)return next(d.error.code||"error");
-if(d.msg_type==="history"&&d.history&&d.history.prices){got=true;clearTimeout(DS.to);DS.q=d.history.prices.map(Number);DS.pip=d.pip_size||mk()[2];DS.src="Live \u00B7 Deriv";feed();paintSig()}
-else if(d.msg_type==="tick"&&d.tick){DS.q.push(+d.tick.quote);if(DS.q.length>120)DS.q.shift();DS.pip=d.tick.pip_size||DS.pip;feed()}};
-w.onerror=function(){if(!got)next("connection")};
-w.onclose=function(){if(!got)return next("closed");if(S.view==="dash")setTimeout(function(){if(S.view==="dash"&&DS.ws===w)connect(i)},2000)};
-DS.to=setTimeout(function(){next("timeout")},6000)}
-function stopDash(){clearInterval(DS.iv);clearInterval(DS.sim);clearInterval(DS.scT);clearTimeout(DS.to);killWs()}
-function startDash(){selLoad();var A=ACC[S.plan||"matches"];if(!DS.tab||A.indexOf(DS.tab)<0)DS.tab=A[0];paintTabs();paintOpt();clearInterval(DS.iv);DS.iv=setInterval(loop,250);connect()}
-function mopt(m){return '<option value="'+m[0]+'"'+(DS.mk===m[0]?' selected':'')+'>'+m[1]+'</option>'}
-V.dash=function(){selLoad();return '<div style="margin-bottom:14px"><button class="btn g" onclick="backDash()">&larr; Back</button></div>'+welcome()+'<h2>Signal dashboard</h2>'+'<select onchange="setMk(this.value)"><optgroup label="Volatility Indices">'+MK.filter(function(m){return m[3]===2}).map(mopt).join('')+'</optgroup><optgroup label="Volatility Indices (1s)">'+MK.filter(function(m){return m[3]===1}).map(mopt).join('')+'</optgroup></select><div class="tabs" id="dtabs" style="flex-wrap:wrap"></div><div id="dopt"></div><div class="card" style="text-align:center"><div id="dsig"></div><div id="dinfo"></div><button class="btn scan" id="dscan" onclick="startScan()">SCAN MARKET</button></div><div class="card" style="margin-top:14px"><b>Last-digit frequency (last 100 ticks)</b><div class="bars" id="dbars" style="margin-top:10px"></div><p id="dstrip" style="word-break:break-all;font-size:.85rem"></p></div><div class="ft">Analysis only. Digit outcomes are random and no signal guarantees profit. Trade responsibly.</div>'};
 
 var wt=null;
 function keyLnk(f,t,al){return '<p style="margin:10px 0 0;text-align:'+al+'"><a class="lnk" href="#" onclick="openKey(\''+f+'\');return false">'+t+'</a></p>'}
@@ -447,7 +544,7 @@ var note=(st==="pending"&&S.regErr&&!PREVIEW)?'<p class="note">We could not regi
 return '<div class="card wait" style="max-width:480px;margin:0 auto"><div class="ic">'+(st==="pending"||!st?'&#9203;':'&#9888;&#65039;')+'</div><h2>'+t+'</h2><p>'+msg+'</p>'+note+'<div class="acts" style="justify-content:center">'+acts+pv+'</div>'+keyLnk('wait','Proceed using a key','center')+'</div>'}
 function render(){
 if(S.view==="dash"&&!PREVIEW&&S.status!=="approved")S.view=waitish()?"wait":(S.account?"plans":"home");
-document.getElementById("app").innerHTML=V[S.view]();initHome();initWait();stopDash();if(S.view==="dash")startDash();applyLang();fxPaint()}
+document.getElementById("app").innerHTML=V[S.view]();initHome();initWait();document.body.classList.toggle("dxon",S.view==="dash");if(S.view==="dash")dxMount();else dxStop();applyLang();fxPaint()}
 load();ensureCid();parseOAuth();
 if(S.account&&(S.status==="pending"||S.status==="rejected"||S.status==="revoked"||S.status==="expired"))S.view="wait";else if(S.status==="approved"&&S.account)S.view="dash";
 try{var rv=sessionStorage.getItem("dpai_rv");sessionStorage.removeItem("dpai_rv");if(rv&&V[rv]&&rv!=="dash"&&!(rv==="pay"&&!plan())&&!(S.status==="approved"&&/^(wait|pay|plans|login)$/.test(rv)))S.view=rv}catch(e){}
